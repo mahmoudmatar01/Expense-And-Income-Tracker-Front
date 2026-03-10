@@ -1,0 +1,51 @@
+<app-page-header title="My Profile" subtitle="View and update your profile">
+    <button class="btn btn-primary" (click)="save()">
+        <span class="material-icons" style="font-size: 18px;">save</span> Save
+    </button>
+</app-page-header>
+
+<div class="two-col-layout">
+    <div class="chart-card">
+        <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem;">
+            <div
+                style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #635BFF, #8b85ff); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.5rem;">
+                {{ profile.name.charAt(0) }}
+            </div>
+            <div>
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--color-secondary);">{{ profile.name }}</h3>
+                <p style="color: var(--color-text-muted); font-size: 0.875rem;">{{ profile.email }}</p>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input class="form-control" [(ngModel)]="profile.name" />
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-control" type="email" [value]="profile.email" disabled style="opacity: 0.6;" />
+        </div>
+        <div class="form-group">
+            <label class="form-label">Grade / Level</label>
+            <input class="form-control" [(ngModel)]="profile.grade" />
+        </div>
+    </div>
+
+    <div class="chart-card">
+        <h3 style="margin-bottom: 1.5rem;">Account Info</h3>
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <div style="padding: 1rem; background: var(--color-background); border-radius: var(--border-radius);">
+                <span style="font-size: 0.75rem; color: var(--color-text-muted); display: block;">Parent Account</span>
+                <strong style="font-size: 0.9375rem;">{{ profile.parentName }}</strong>
+            </div>
+            <div style="padding: 1rem; background: var(--color-background); border-radius: var(--border-radius);">
+                <span style="font-size: 0.75rem; color: var(--color-text-muted); display: block;">Member Since</span>
+                <strong style="font-size: 0.9375rem;">{{ profile.joinedDate }}</strong>
+            </div>
+            <div style="padding: 1rem; background: var(--color-background); border-radius: var(--border-radius);">
+                <span style="font-size: 0.75rem; color: var(--color-text-muted); display: block;">Role</span>
+                <strong style="font-size: 0.9375rem;">Child</strong>
+            </div>
+        </div>
+    </div>
+</div>

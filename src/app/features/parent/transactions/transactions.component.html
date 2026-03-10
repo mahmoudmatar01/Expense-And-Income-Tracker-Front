@@ -1,0 +1,61 @@
+<app-page-header title="Transactions" subtitle="Track all your income and expenses"></app-page-header>
+
+<app-data-table [columns]="columns" [data]="transactions" [searchable]="true" searchPlaceholder="Search transactions..."
+    [filterOptions]="['Income', 'Expense']" filterLabel="All Types" filterKey="type" [showActions]="true">
+    <ng-template #rowActions let-row>
+        <button class="icon-btn" title="Edit"><span class="material-icons">edit</span></button>
+    </ng-template>
+</app-data-table>
+
+<button class="fab" (click)="showModal = true" title="Add Transaction">
+    <span class="material-icons">add</span>
+</button>
+
+<app-modal [isOpen]="showModal" title="Add Transaction" (close)="showModal = false">
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">Type</label>
+            <select class="form-control" [(ngModel)]="newTxn.type">
+                <option value="Income">Income</option>
+                <option value="Expense">Expense</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Amount</label>
+            <input class="form-control" type="number" [(ngModel)]="newTxn.amount" placeholder="0.00" />
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">Category</label>
+            <select class="form-control" [(ngModel)]="newTxn.category">
+                <option value="Groceries">Groceries</option>
+                <option value="Salary">Salary</option>
+                <option value="Utilities">Utilities</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Transport">Transport</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Food">Food</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Wallet</label>
+            <select class="form-control" [(ngModel)]="newTxn.wallet">
+                <option value="Main Wallet">Main Wallet</option>
+                <option value="Savings">Savings</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="form-label">Description</label>
+        <input class="form-control" [(ngModel)]="newTxn.description" placeholder="What was this for?" />
+    </div>
+    <div class="form-group">
+        <label class="form-label">Date</label>
+        <input class="form-control" type="date" [(ngModel)]="newTxn.date" />
+    </div>
+    <div class="form-actions">
+        <button class="btn-outline" (click)="showModal = false">Cancel</button>
+        <button class="btn btn-primary" (click)="addTransaction()">Add Transaction</button>
+    </div>
+</app-modal>

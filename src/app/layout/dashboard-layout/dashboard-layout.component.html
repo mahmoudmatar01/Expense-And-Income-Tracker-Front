@@ -1,0 +1,13 @@
+<div class="layout-wrapper">
+    <!-- Mobile overlay backdrop -->
+    <div class="sidebar-overlay" [class.visible]="sidebarOpen" (click)="closeSidebar()"></div>
+
+    <app-sidebar [isOpen]="sidebarOpen" (closed)="closeSidebar()"></app-sidebar>
+
+    <div class="main-content-wrapper">
+        <app-header (menuToggle)="toggleSidebar()"></app-header>
+        <main class="main-content">
+            <router-outlet></router-outlet>
+        </main>
+    </div>
+</div>

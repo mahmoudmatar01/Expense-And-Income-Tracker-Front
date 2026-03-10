@@ -1,0 +1,42 @@
+<app-page-header title="System Insights" subtitle="Platform analytics and performance metrics"></app-page-header>
+
+<div class="stats-grid">
+    <app-stat-card label="Avg. Daily Users" value="892" icon="people" iconColor="#635BFF" iconBg="rgba(99,91,255,0.1)"
+        change="+5% this week"></app-stat-card>
+    <app-stat-card label="Avg. Transaction/Day" value="$18.5K" icon="trending_up" iconColor="#2ECC71"
+        iconBg="rgba(46,204,113,0.1)" change="+12% this week"></app-stat-card>
+    <app-stat-card label="User Retention" value="94.2%" icon="loyalty" iconColor="#F39C12" iconBg="rgba(243,156,18,0.1)"
+        change="+2.1% this month"></app-stat-card>
+    <app-stat-card label="System Uptime" value="99.98%" icon="cloud_done" iconColor="#3498DB"
+        iconBg="rgba(52,152,219,0.1)"></app-stat-card>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>Platform Growth</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="platformGrowth" [options]="chartOptions" type="line"></canvas>
+        </div>
+    </div>
+    <div class="chart-card">
+        <h3>Transaction Volume</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="transactionVolume" [options]="chartOptions" type="bar"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>User Engagement (Weekly)</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="engagementData" [options]="chartOptions" type="line"></canvas>
+        </div>
+    </div>
+    <div class="chart-card">
+        <h3>Spending by Category</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="categoryData" [options]="pieOptions" type="doughnut"></canvas>
+        </div>
+    </div>
+</div>

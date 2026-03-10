@@ -1,0 +1,32 @@
+<app-page-header title="Reports" subtitle="Generate and download system reports">
+    <button class="btn btn-primary">
+        <span class="material-icons" style="font-size: 18px;">add</span>
+        Generate Report
+    </button>
+</app-page-header>
+
+<div class="cards-grid">
+    <div class="item-card" *ngFor="let report of reports">
+        <div class="item-card-header">
+            <div class="item-card-icon">
+                <span class="material-icons">{{ report.icon }}</span>
+            </div>
+            <span
+                style="font-size: 0.6875rem; font-weight: 500; padding: 0.2rem 0.5rem; background: rgba(99,91,255,0.1); color: var(--color-primary); border-radius: 4px;">{{
+                report.type }}</span>
+        </div>
+        <h4>{{ report.name }}</h4>
+        <p class="meta" style="margin-bottom: 1rem;">{{ report.description }}</p>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="meta">{{ report.date }}</span>
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn-outline btn-sm">
+                    <span class="material-icons" style="font-size: 14px;">download</span> CSV
+                </button>
+                <button class="btn btn-primary btn-sm">
+                    <span class="material-icons" style="font-size: 14px;">picture_as_pdf</span> PDF
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

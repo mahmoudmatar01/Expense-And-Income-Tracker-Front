@@ -1,0 +1,138 @@
+<div class="auth-container">
+    <div class="auth-card">
+        <!-- Logo & Header -->
+        <div class="auth-header">
+            <div class="logo">
+                <span class="material-icons logo-icon">monetization_on</span>
+                <h2>Expense Tracker</h2>
+            </div>
+            <p class="subtitle">Create your parent account</p>
+        </div>
+
+        <!-- Success Alert -->
+        <div class="alert alert-success" *ngIf="successMessage">
+            <span class="material-icons alert-icon">check_circle</span>
+            <span>{{ successMessage }}</span>
+        </div>
+
+        <!-- Error Alert -->
+        <div class="alert alert-error" *ngIf="errorMessage">
+            <span class="material-icons alert-icon">error</span>
+            <span>{{ errorMessage }}</span>
+        </div>
+
+        <!-- Registration Form -->
+        <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form" autocomplete="off">
+
+            <!-- Full Name -->
+            <div class="form-group">
+                <label class="form-label" for="register-name">Full Name</label>
+                <div class="input-wrapper" [class.error]="f['name'].touched && f['name'].invalid">
+                    <span class="material-icons input-icon">person</span>
+                    <input id="register-name" type="text" class="form-control has-icon" formControlName="name"
+                        placeholder="John Doe" autocomplete="name" />
+                </div>
+                <div class="field-error" *ngIf="f['name'].touched && f['name'].errors">
+                    <span *ngIf="f['name'].hasError('required')">Full name is required.</span>
+                    <span *ngIf="f['name'].hasError('minlength')">Name must be at least 2 characters.</span>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label class="form-label" for="register-email">Email Address</label>
+                <div class="input-wrapper" [class.error]="f['email'].touched && f['email'].invalid">
+                    <span class="material-icons input-icon">mail</span>
+                    <input id="register-email" type="email" class="form-control has-icon" formControlName="email"
+                        placeholder="name@company.com" autocomplete="email" />
+                </div>
+                <div class="field-error" *ngIf="f['email'].touched && f['email'].errors">
+                    <span *ngIf="f['email'].hasError('required')">Email is required.</span>
+                    <span *ngIf="f['email'].hasError('email')">Please enter a valid email address.</span>
+                </div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label class="form-label" for="register-password">Password</label>
+                <div class="input-wrapper" [class.error]="f['password'].touched && f['password'].invalid">
+                    <span class="material-icons input-icon">lock</span>
+                    <input id="register-password" [type]="showPassword ? 'text' : 'password'"
+                        class="form-control has-icon has-toggle" formControlName="password"
+                        placeholder="Minimum 8 characters" autocomplete="new-password" />
+                    <button type="button" class="toggle-password" (click)="togglePassword('password')" tabindex="-1">
+                        <span class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+                    </button>
+                </div>
+                <div class="field-error" *ngIf="f['password'].touched && f['password'].errors">
+                    <span *ngIf="f['password'].hasError('required')">Password is required.</span>
+                    <span *ngIf="f['password'].hasError('minlength')">Password must be at least 8 characters.</span>
+                </div>
+                <!-- Password Strength -->
+                <div class="password-strength" *ngIf="f['password'].value">
+                    <div class="strength-track">
+                        <div class="strength-fill" [style.width]="passwordStrength.width"
+                            [style.background]="passwordStrength.color"></div>
+                    </div>
+                    <span class="strength-label" [style.color]="passwordStrength.color">{{ passwordStrength.label
+                        }}</span>
+                </div>
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="form-group">
+                <label class="form-label" for="register-confirm">Confirm Password</label>
+                <div class="input-wrapper" [class.error]="f['confirmPassword'].touched && f['confirmPassword'].invalid">
+                    <span class="material-icons input-icon">lock</span>
+                    <input id="register-confirm" [type]="showConfirmPassword ? 'text' : 'password'"
+                        class="form-control has-icon has-toggle" formControlName="confirmPassword"
+                        placeholder="Re-enter your password" autocomplete="new-password" />
+                    <button type="button" class="toggle-password" (click)="togglePassword('confirm')" tabindex="-1">
+                        <span class="material-icons">{{ showConfirmPassword ? 'visibility_off' : 'visibility' }}</span>
+                    </button>
+                </div>
+                <div class="field-error" *ngIf="f['confirmPassword'].touched && f['confirmPassword'].errors">
+                    <span *ngIf="f['confirmPassword'].hasError('required')">Please confirm your password.</span>
+                    <span *ngIf="f['confirmPassword'].hasError('passwordMismatch')">Passwords do not match.</span>
+                </div>
+            </div>
+
+            <!-- Role Info -->
+            <div class="role-info">
+                <span class="material-icons role-info-icon">info</span>
+                <p>You are registering as a <strong>Parent</strong>. Child accounts can be created from your dashboard
+                    after registration.</p>
+            </div>
+
+            <!-- Terms Checkbox -->
+            <div class="terms-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" formControlName="agreeTerms" />
+                    <span class="checkmark"></span>
+                    <span class="terms-text">I agree to the <a href="javascript:void(0)">Terms of Service</a> and <a
+                            href="javascript:void(0)">Privacy Policy</a></span>
+                </label>
+                <div class="field-error" *ngIf="f['agreeTerms'].touched && f['agreeTerms'].hasError('required')">
+                    You must agree to the terms to continue.
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary btn-block" [disabled]="isLoading" [class.loading]="isLoading">
+                <span class="btn-content" *ngIf="!isLoading">
+                    <span class="material-icons" style="font-size: 18px;">person_add</span>
+                    Create Account
+                </span>
+                <span class="btn-content" *ngIf="isLoading">
+                    <span class="spinner"></span>
+                    Creating your account...
+                </span>
+            </button>
+        </form>
+
+        <!-- Footer -->
+        <div class="auth-footer">
+            <p>Already have an account? <a routerLink="/login" class="text-primary">Sign in</a></p>
+        </div>
+    </div>
+</div>

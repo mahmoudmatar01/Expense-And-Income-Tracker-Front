@@ -1,0 +1,50 @@
+<app-page-header title="Children Users" subtitle="Manage your children's accounts and allowances">
+    <button class="btn btn-primary" (click)="openAdd()">
+        <span class="material-icons" style="font-size: 18px;">person_add</span> Add Child
+    </button>
+</app-page-header>
+
+<app-data-table [columns]="columns" [data]="children" [searchable]="true" searchPlaceholder="Search children..."
+    [showActions]="true">
+    <ng-template #rowActions let-row>
+        <div style="display: flex; gap: 0.25rem; justify-content: flex-end;">
+            <button class="icon-btn" title="View Spending"><span class="material-icons">bar_chart</span></button>
+            <button class="icon-btn" title="Edit"><span class="material-icons">edit</span></button>
+            <button class="icon-btn" (click)="deactivateChild(row)"
+                [title]="row.status === 'Active' ? 'Deactivate' : 'Activate'">
+                <span class="material-icons"
+                    [style.color]="row.status === 'Active' ? 'var(--color-danger)' : 'var(--color-success)'">
+                    {{ row.status === 'Active' ? 'person_off' : 'person' }}
+                </span>
+            </button>
+            <button class="icon-btn" title="Reset Password"><span class="material-icons">lock_reset</span></button>
+        </div>
+    </ng-template>
+</app-data-table>
+
+<app-modal [isOpen]="showModal" title="Add Child Account" (close)="showModal = false">
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">Child Name</label>
+            <input class="form-control" [(ngModel)]="newChild.name" placeholder="Full name" />
+        </div>
+        <div class="form-group">
+            <label class="form-label">Email</label>
+            <input class="form-control" type="email" [(ngModel)]="newChild.email" placeholder="child@example.com" />
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">Monthly Allowance ($)</label>
+            <input class="form-control" type="number" [(ngModel)]="newChild.allowance" />
+        </div>
+        <div class="form-group">
+            <label class="form-label">Spending Limit ($)</label>
+            <input class="form-control" type="number" [(ngModel)]="newChild.spendingLimit" />
+        </div>
+    </div>
+    <div class="form-actions">
+        <button class="btn-outline" (click)="showModal = false">Cancel</button>
+        <button class="btn btn-primary" (click)="saveChild()">Add Child</button>
+    </div>
+</app-modal>

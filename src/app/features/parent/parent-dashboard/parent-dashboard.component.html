@@ -1,0 +1,91 @@
+<app-page-header title="Dashboard" subtitle="Your personal finance overview"></app-page-header>
+
+<div class="stats-grid">
+    <app-stat-card label="Total Balance" value="$12,270.00" icon="account_balance" iconColor="#635BFF"
+        iconBg="rgba(99,91,255,0.1)" change="+18% this month" [gradient]="true"></app-stat-card>
+    <app-stat-card label="Monthly Income" value="$3,500.00" icon="trending_up" iconColor="#2ECC71"
+        iconBg="rgba(46,204,113,0.1)" change="+$400 vs last month"></app-stat-card>
+    <app-stat-card label="Monthly Expenses" value="$980.00" icon="trending_down" iconColor="#E74C3C"
+        iconBg="rgba(231,76,60,0.1)" change="-26% vs last month"></app-stat-card>
+    <app-stat-card label="Budget Remaining" value="$520.00" icon="pie_chart" iconColor="#F39C12"
+        iconBg="rgba(243,156,18,0.1)"></app-stat-card>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>Expenses by Category</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="pieChartData" [options]="pieOptions" type="doughnut"></canvas>
+        </div>
+    </div>
+    <div class="chart-card">
+        <h3>Income vs Expenses</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="spendingChart" [options]="chartOptions" type="bar"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>Balance Over Time</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="balanceChart" [options]="chartOptions" type="line"></canvas>
+        </div>
+    </div>
+    <div class="chart-card">
+        <h3>Children Spending</h3>
+        <div class="children-spending-list">
+            <div class="child-spend-item" *ngFor="let child of childrenSpending">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                    <div class="child-avatar">{{ child.avatar }}</div>
+                    <div style="flex: 1;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span style="font-weight: 600; font-size: 0.875rem;">{{ child.name }}</span>
+                            <span style="font-size: 0.8125rem; color: var(--color-text-muted);">${{ child.spent |
+                                number:'1.2-2' }} / ${{ child.limit }}</span>
+                        </div>
+                        <div class="progress-bar-track">
+                            <div class="progress-bar-fill" [style.width.%]="(child.spent / child.limit) * 100"
+                                [style.background]="(child.spent / child.limit) > 0.8 ? 'var(--color-danger)' : 'var(--color-primary)'">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Transactions -->
+<div class="chart-card" style="margin-top: 0.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+        <h3 style="margin: 0;">Recent Transactions</h3>
+        <a href="/parent/transactions" style="font-size: 0.8125rem; color: var(--color-primary); font-weight: 600;">View
+            All →</a>
+    </div>
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Wallet</th>
+                    <th>Type</th>
+                    <th style="text-align: right;">Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let txn of recentTransactions">
+                    <td>{{ txn.date }}</td>
+                    <td><span class="badge">{{ txn.category }}</span></td>
+                    <td>{{ txn.wallet }}</td>
+                    <td><span [class]="txn.type === 'Income' ? 'text-success' : 'text-danger'">{{ txn.type }}</span>
+                    </td>
+                    <td style="text-align: right; font-weight: 600;"
+                        [class]="txn.type === 'Income' ? 'text-success' : 'text-danger'">{{ txn.amount }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

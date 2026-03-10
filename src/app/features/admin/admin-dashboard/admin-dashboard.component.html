@@ -1,0 +1,61 @@
+<app-page-header title="Dashboard Overview" subtitle="Monitor platform activity and system health"></app-page-header>
+
+<div class="stats-grid">
+    <app-stat-card label="Total Users" value="1,245" icon="group" iconColor="#635BFF" iconBg="rgba(99,91,255,0.1)"
+        change="+12% this month"></app-stat-card>
+    <app-stat-card label="Active Parents" value="845" icon="person" iconColor="#2ECC71" iconBg="rgba(46,204,113,0.1)"
+        change="+8% this month"></app-stat-card>
+    <app-stat-card label="Active Children" value="400" icon="child_care" iconColor="#F39C12"
+        iconBg="rgba(243,156,18,0.1)" change="+15% this month"></app-stat-card>
+    <app-stat-card label="Total Transactions" value="$2.4M" icon="swap_horiz" iconColor="#E74C3C"
+        iconBg="rgba(231,76,60,0.1)" change="+22% this month"></app-stat-card>
+</div>
+
+<!-- Alerts -->
+<div class="alert-card" *ngFor="let alert of alerts">
+    <span class="material-icons">warning</span>
+    <div>
+        <p><strong>{{ alert.message }}</strong></p>
+        <small style="color: var(--color-text-muted);">{{ alert.time }}</small>
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>User Registrations</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="barChartData" [options]="chartOptions" type="bar"></canvas>
+        </div>
+    </div>
+    <div class="chart-card">
+        <h3>Transaction Volume</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="lineChartData" [options]="chartOptions" type="line"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>User Distribution</h3>
+        <div class="chart-container" style="height: 240px;">
+            <canvas baseChart [data]="doughnutChartData" [options]="doughnutOptions" type="doughnut"></canvas>
+        </div>
+    </div>
+    <div class="chart-card">
+        <h3>Recent Registrations</h3>
+        <div class="recent-list">
+            <div class="recent-item" *ngFor="let user of recentUsers">
+                <div class="user-avatar">{{ user.name.charAt(0) }}</div>
+                <div class="user-details">
+                    <span class="name">{{ user.name }}</span>
+                    <span class="email">{{ user.email }}</span>
+                </div>
+                <div class="user-meta">
+                    <span class="role-badge">{{ user.role }}</span>
+                    <span class="date">{{ user.date }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

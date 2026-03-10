@@ -1,0 +1,59 @@
+<app-page-header title="Wallets" subtitle="Manage your wallets and balances">
+    <button class="btn btn-primary" (click)="openAdd()">
+        <span class="material-icons" style="font-size: 18px;">add</span>
+        Add Wallet
+    </button>
+</app-page-header>
+
+<div class="cards-grid">
+    <div class="item-card" *ngFor="let wallet of wallets">
+        <div class="item-card-header">
+            <div class="item-card-icon" [style.background]="wallet.color + '18'" [style.color]="wallet.color">
+                <span class="material-icons">{{ wallet.icon }}</span>
+            </div>
+            <div class="item-card-actions">
+                <button class="icon-btn" (click)="openEdit(wallet)" title="Edit"><span
+                        class="material-icons">edit</span></button>
+                <button class="icon-btn" (click)="deleteWallet(wallet)" title="Delete"><span class="material-icons"
+                        style="color: var(--color-danger);">delete_outline</span></button>
+            </div>
+        </div>
+        <h4>{{ wallet.name }}</h4>
+        <p class="meta" *ngIf="wallet.assigned">Assigned to: {{ wallet.assigned }}</p>
+        <div class="amount-large" [style.color]="wallet.color">${{ wallet.balance | number:'1.2-2' }}</div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="meta">{{ wallet.currency }}</span>
+            <span class="meta">Last: {{ wallet.lastActivity }}</span>
+        </div>
+    </div>
+</div>
+
+<app-modal [isOpen]="showModal" [title]="editingWallet ? 'Edit Wallet' : 'Add Wallet'" (close)="showModal = false">
+    <div class="form-group">
+        <label class="form-label">Wallet Name</label>
+        <input class="form-control" [(ngModel)]="newWallet.name" placeholder="e.g. Main Wallet" />
+    </div>
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">Currency</label>
+            <select class="form-control" [(ngModel)]="newWallet.currency">
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
+                <option value="GBP">GBP</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Assign to Child (optional)</label>
+            <select class="form-control" [(ngModel)]="newWallet.assignedChild">
+                <option value="">None</option>
+                <option value="Emma">Emma</option>
+                <option value="Jake">Jake</option>
+                <option value="Mia">Mia</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-actions">
+        <button class="btn-outline" (click)="showModal = false">Cancel</button>
+        <button class="btn btn-primary" (click)="saveWallet()">{{ editingWallet ? 'Save' : 'Create Wallet' }}</button>
+    </div>
+</app-modal>

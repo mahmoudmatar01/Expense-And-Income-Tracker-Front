@@ -1,0 +1,14 @@
+<app-page-header title="Transactions Monitoring" subtitle="Track all system-wide transactions"></app-page-header>
+
+<app-data-table [columns]="columns" [data]="transactions" [searchable]="true"
+    searchPlaceholder="Search by user, category, or ID..." [filterOptions]="['Income', 'Expense', 'Transfer']"
+    filterLabel="All Types" filterKey="type" [showActions]="true">
+    <ng-template #rowActions let-row>
+        <button class="icon-btn" title="View Details">
+            <span class="material-icons">visibility</span>
+        </button>
+        <button class="icon-btn" *ngIf="row.flagged === 'Active'" title="Flag as suspicious">
+            <span class="material-icons" style="color: #F39C12;">flag</span>
+        </button>
+    </ng-template>
+</app-data-table>

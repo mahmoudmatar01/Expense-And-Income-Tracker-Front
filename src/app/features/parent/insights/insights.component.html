@@ -1,0 +1,42 @@
+<app-page-header title="Insights" subtitle="Detailed spending analytics and trends"></app-page-header>
+
+<div class="stats-grid">
+    <app-stat-card label="Avg. Monthly Spending" value="$1,288" icon="analytics" iconColor="#E74C3C"
+        iconBg="rgba(231,76,60,0.1)" change="-8% vs average"></app-stat-card>
+    <app-stat-card label="Top Category" value="Groceries" icon="shopping_cart" iconColor="#635BFF"
+        iconBg="rgba(99,91,255,0.1)"></app-stat-card>
+    <app-stat-card label="Savings Rate" value="67%" icon="savings" iconColor="#2ECC71" iconBg="rgba(46,204,113,0.1)"
+        change="+5% this month"></app-stat-card>
+    <app-stat-card label="Children Total" value="$136.30" icon="family_restroom" iconColor="#F39C12"
+        iconBg="rgba(243,156,18,0.1)"></app-stat-card>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>Spending by Category</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="categorySpending" [options]="pieOptions" type="doughnut"></canvas>
+        </div>
+    </div>
+    <div class="chart-card">
+        <h3>Income vs Expenses</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="incomeVsExpenses" [options]="chartOptions" type="bar"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <h3>Monthly Spending Trends</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="monthlyTrends" [options]="chartOptions" type="line"></canvas>
+        </div>
+    </div>
+    <div class="chart-card">
+        <h3>Children Spending Analysis</h3>
+        <div class="chart-container">
+            <canvas baseChart [data]="childSpending" [options]="chartOptions" type="bar"></canvas>
+        </div>
+    </div>
+</div>

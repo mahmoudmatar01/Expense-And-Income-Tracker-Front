@@ -1,0 +1,39 @@
+<app-page-header title="My Transactions" subtitle="View your spending history"></app-page-header>
+
+<app-data-table [columns]="columns" [data]="transactions" [searchable]="true"
+    searchPlaceholder="Search transactions...">
+</app-data-table>
+
+<button class="fab" (click)="showModal = true" title="Add Expense">
+    <span class="material-icons">add</span>
+</button>
+
+<app-modal [isOpen]="showModal" title="Add Expense" (close)="showModal = false">
+    <div class="form-row">
+        <div class="form-group">
+            <label class="form-label">Amount ($)</label>
+            <input class="form-control" type="number" [(ngModel)]="newExpense.amount" placeholder="0.00" />
+        </div>
+        <div class="form-group">
+            <label class="form-label">Category</label>
+            <select class="form-control" [(ngModel)]="newExpense.category">
+                <option value="Food">Food</option>
+                <option value="Entertainment">Entertainment</option>
+                <option value="Shopping">Shopping</option>
+                <option value="Transport">Transport</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label class="form-label">Description</label>
+        <input class="form-control" [(ngModel)]="newExpense.description" placeholder="What did you buy?" />
+    </div>
+    <div class="form-group">
+        <label class="form-label">Date</label>
+        <input class="form-control" type="date" [(ngModel)]="newExpense.date" />
+    </div>
+    <div class="form-actions">
+        <button class="btn-outline" (click)="showModal = false">Cancel</button>
+        <button class="btn btn-primary" (click)="addExpense()">Add Expense</button>
+    </div>
+</app-modal>

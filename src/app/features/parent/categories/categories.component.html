@@ -1,0 +1,44 @@
+<app-page-header title="Categories" subtitle="Organize your spending by category">
+    <button class="btn btn-primary" (click)="openAdd()">
+        <span class="material-icons" style="font-size: 18px;">add</span> Add Category
+    </button>
+</app-page-header>
+
+<div class="cards-grid">
+    <div class="item-card" *ngFor="let cat of categories">
+        <div class="item-card-header">
+            <div class="item-card-icon" [style.background]="cat.color + '18'" [style.color]="cat.color">
+                <span class="material-icons">{{ cat.icon }}</span>
+            </div>
+            <div class="item-card-actions">
+                <button class="icon-btn" (click)="openEdit(cat)"><span class="material-icons">edit</span></button>
+                <button class="icon-btn" (click)="deleteCat(cat)"><span class="material-icons"
+                        style="color: var(--color-danger);">delete_outline</span></button>
+            </div>
+        </div>
+        <h4>{{ cat.name }}</h4>
+        <div class="progress-bar-track">
+            <div class="progress-bar-fill" [style.width.%]="(cat.spent / cat.budget) * 100"
+                [style.background]="(cat.spent / cat.budget) > 0.9 ? 'var(--color-danger)' : cat.color"></div>
+        </div>
+        <div class="progress-label">
+            <span>${{ cat.spent }} spent</span>
+            <span>${{ cat.budget }} budget</span>
+        </div>
+    </div>
+</div>
+
+<app-modal [isOpen]="showModal" [title]="editingCat ? 'Edit Category' : 'Add Category'" (close)="showModal = false">
+    <div class="form-group">
+        <label class="form-label">Category Name</label>
+        <input class="form-control" [(ngModel)]="newCat.name" placeholder="e.g. Groceries" />
+    </div>
+    <div class="form-group">
+        <label class="form-label">Monthly Budget Limit ($)</label>
+        <input class="form-control" type="number" [(ngModel)]="newCat.budget" placeholder="0" />
+    </div>
+    <div class="form-actions">
+        <button class="btn-outline" (click)="showModal = false">Cancel</button>
+        <button class="btn btn-primary" (click)="save()">{{ editingCat ? 'Save' : 'Create' }}</button>
+    </div>
+</app-modal>

@@ -1,0 +1,22 @@
+<aside class="sidebar" [class.open]="isOpen">
+    <div class="sidebar-header">
+        <div class="logo">
+            <span class="material-icons logo-icon">monetization_on</span>
+            <h2>Expense Tracker</h2>
+        </div>
+        <button class="sidebar-close" (click)="closed.emit()" aria-label="Close sidebar">
+            <span class="material-icons">close</span>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav">
+        <ul>
+            <li *ngFor="let item of allowedMenu">
+                <a [routerLink]="item.route" routerLinkActive="active" class="nav-link" (click)="onNavClick()">
+                    <span class="material-icons">{{item.icon}}</span>
+                    <span class="nav-label">{{item.label}}</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</aside>

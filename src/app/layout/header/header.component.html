@@ -1,0 +1,22 @@
+<header class="header">
+    <div class="header-left">
+        <button class="hamburger-btn" (click)="menuToggle.emit()" aria-label="Toggle menu">
+            <span class="material-icons">menu</span>
+        </button>
+    </div>
+
+    <div class="header-right">
+        <div class="user-profile" *ngIf="currUser">
+            <div class="avatar">
+                {{ currUser.name.charAt(0).toUpperCase() }}
+            </div>
+            <div class="user-info">
+                <span class="user-name">{{ currUser.name }}</span>
+                <span class="user-role">{{ currUser.role }}</span>
+            </div>
+            <button class="btn btn-logout" (click)="logout()" title="Logout">
+                <span class="material-icons">logout</span>
+            </button>
+        </div>
+    </div>
+</header>

@@ -1,0 +1,14 @@
+<app-page-header title="Suspended Accounts" subtitle="Review and manage suspended users">
+    <span style="font-size: 0.875rem; color: var(--color-danger); font-weight: 600;">{{ suspendedUsers.length }}
+        suspended</span>
+</app-page-header>
+
+<app-data-table [columns]="columns" [data]="suspendedUsers" [searchable]="true"
+    searchPlaceholder="Search suspended users..." [showActions]="true">
+    <ng-template #rowActions let-row>
+        <button class="btn btn-success btn-sm" (click)="reactivate(row)">
+            <span class="material-icons" style="font-size: 16px;">check_circle</span>
+            Reactivate
+        </button>
+    </ng-template>
+</app-data-table>
