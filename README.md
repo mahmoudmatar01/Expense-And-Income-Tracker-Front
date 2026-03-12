@@ -1,59 +1,262 @@
-# ExpenseTracker
+# Expense Income Tracker – Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.0.
+## Overview
 
-## Development server
+**Expense Income Tracker** is a modern financial management web application designed to help families track their income and expenses while teaching children responsible money management.
 
-To start a local development server, run:
+The system supports **three types of users**:
+
+- **Parent** – manages wallets, budgets, categories, and children accounts.
+- **Child** – records expenses and learns spending habits.
+- **Admin** – monitors the platform and manages users.
+
+This repository contains the **Angular frontend application** that communicates with a **Spring Boot REST API backend**.
+
+---
+
+## Tech Stack
+
+### Frontend
+- Angular
+- TypeScript
+- HTML
+- CSS / SCSS
+
+### Architecture
+- Component-based architecture
+- Feature-based modules
+- Service-based API communication
+- Reactive programming using RxJS
+
+### Authentication
+- JWT Authentication
+- Refresh Token mechanism
+
+### Backend
+- Spring Boot REST API
+
+---
+
+# Application Features
+
+## Authentication
+
+- Parent Registration
+- Secure Login
+- JWT Authentication
+- Refresh Token Support
+- Logout
+
+---
+
+# Parent Dashboard
+
+The Parent Dashboard allows parents to manage family financial activities.
+
+### Features
+
+- Wallet Management
+- Categories Management
+- Budgets Management
+- Children Accounts Management
+- Transactions Management
+- Financial Insights
+- Profile Management
+
+### Capabilities
+
+Parents can:
+
+- Create and manage multiple wallets
+- Add and manage expense categories
+- Create budgets for spending control
+- Create accounts for their children
+- Monitor children's financial activity
+- Track income and expense transactions
+
+---
+
+# Child Dashboard
+
+The Child Dashboard is designed to help children track their spending habits.
+
+### Features
+
+- View Wallet Balance
+- Create Expense Transactions
+- View Recent Transactions
+- Spending by Category chart
+
+### Restrictions
+
+- Children can only create **expense transactions**
+- Transaction type is fixed to **EXPENSE**
+- Children cannot modify transaction type
+
+---
+
+# Admin Dashboard
+
+The Admin Dashboard is responsible for managing the entire system.
+
+### Features
+
+- View all system users
+- Monitor transactions
+- Manage user status
+- View analytics
+- Manage suspended accounts
+
+---
+
+# Project Structure
+
+Example Angular structure:
+
+```
+src/
+ ├── app/
+ │   ├── core/
+ │   │   ├── guards/
+ │   │   ├── interceptors/
+ │   │   └── services/
+ │   │
+ │   ├── shared/
+ │   │   ├── components/
+ │   │   └── models/
+ │   │
+ │   ├── features/
+ │   │   ├── auth/
+ │   │   ├── parent/
+ │   │   ├── child/
+ │   │   └── admin/
+ │   │
+ │   └── app-routing.module.ts
+```
+
+---
+
+# Backend API
+
+The frontend communicates with the backend via REST APIs.
+
+### Base URL
+
+```
+https://expenseincometracker-production.up.railway.app
+```
+
+### API Groups
+
+- Authentication APIs
+- Parent APIs
+- Child APIs
+- Admin APIs
+
+Authentication is handled using **JWT Bearer Tokens**.
+
+---
+
+# Installation
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/your-username/expense-income-tracker-frontend.git
+```
+
+## Navigate to the Project
+
+```bash
+cd expense-income-tracker-frontend
+```
+
+## Install Dependencies
+
+```bash
+npm install
+```
+
+## Run the Development Server
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Application will be available at:
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```
+http://localhost:4200
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
+# Environment Configuration
+
+Environment variables are located inside:
+
+```
+src/environments/
 ```
 
-## Building
+Example configuration:
 
-To build the project run:
-
-```bash
-ng build
+```ts
+export const environment = {
+  production: false,
+  apiUrl: "https://expenseincometracker-production.up.railway.app"
+};
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+# Authentication Flow
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+1. User logs in using email and password
+2. Backend returns:
+   - Access Token
+   - Refresh Token
+3. Access Token is used for authenticated requests
+4. When the token expires, the refresh token generates a new one
 
-```bash
-ng test
-```
+---
 
-## Running end-to-end tests
+# UI Features
 
-For end-to-end (e2e) testing, run:
+The application includes:
 
-```bash
-ng e2e
-```
+- Responsive dashboard layout
+- Role-based routing
+- Loading states
+- Error handling
+- Form validation
+- Empty state components
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+---
 
-## Additional Resources
+# Future Improvements
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Planned improvements include:
+
+- Mobile responsive enhancements
+- Advanced financial analytics
+- Notification system
+- Dark mode support
+- Export reports (PDF / CSV)
+
+---
+
+# Contributors
+
+Developed by:
+
+**Mahmoud Mohamed Matar**
+
+Software Engineer  
+Backend Developer (Java / Spring Boot)
+
+---
+
+# License
+
+This project is licensed under the MIT License.
