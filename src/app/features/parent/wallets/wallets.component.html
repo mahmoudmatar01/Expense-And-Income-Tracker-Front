@@ -42,13 +42,15 @@
                 <option value="GBP">GBP</option>
             </select>
         </div>
+        <div class="form-group" *ngIf="!editingWallet">
+            <label class="form-label">Initial Balance</label>
+            <input class="form-control" type="number" [(ngModel)]="newWallet.balance" placeholder="0.00" />
+        </div>
         <div class="form-group">
             <label class="form-label">Assign to Child (optional)</label>
-            <select class="form-control" [(ngModel)]="newWallet.assignedChild">
-                <option value="">None</option>
-                <option value="Emma">Emma</option>
-                <option value="Jake">Jake</option>
-                <option value="Mia">Mia</option>
+            <select class="form-control" [(ngModel)]="newWallet.assignedChildId">
+                <option [ngValue]="null">None</option>
+                <option *ngFor="let child of children" [ngValue]="child.id">{{ child.name }}</option>
             </select>
         </div>
     </div>

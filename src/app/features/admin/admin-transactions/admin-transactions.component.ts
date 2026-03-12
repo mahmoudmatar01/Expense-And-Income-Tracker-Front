@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { DataTableComponent, TableColumn } from '../../../shared/components/data-table/data-table.component';
+import { AdminService } from '../../../core/services/admin.service';
 
 @Component({
     selector: 'app-admin-transactions',
@@ -11,25 +12,70 @@ import { DataTableComponent, TableColumn } from '../../../shared/components/data
     templateUrl: './admin-transactions.component.html',
     styleUrls: ['../../../shared/styles/pages.css']
 })
-export class AdminTransactionsComponent {
+export class AdminTransactionsComponent implements OnInit {
+    private adminService = inject(AdminService);
+    private cdr = inject(ChangeDetectorRef);
+
+    isLoading = true;
+    errorMessage = '';
+
     columns: TableColumn[] = [
         { key: 'id', label: 'ID' },
         { key: 'user', label: 'User' },
-        { key: 'type', label: 'Type', type: 'badge', badgeColors: { Income: '#2ECC71', Expense: '#E74C3C', Transfer: '#3498DB' } },
+        { key: 'type', label: 'Type', type: 'badge', badgeColors: { INCOME: '#2ECC71', EXPENSE: '#E74C3C' } },
         { key: 'amount', label: 'Amount', type: 'amount' },
         { key: 'category', label: 'Category' },
         { key: 'date', label: 'Date' },
-        { key: 'flagged', label: 'Status', type: 'status' },
+        { key: 'flagged', label: 'User Status', type: 'status' },
     ];
 
-    transactions = [
-        { id: 'TXN-001', user: 'Sarah Johnson', type: 'Expense', amount: '-$150.00', category: 'Groceries', date: 'Mar 4, 2026', flagged: 'Active' },
-        { id: 'TXN-002', user: 'Mike Chen', type: 'Income', amount: '+$3,000.00', category: 'Salary', date: 'Mar 3, 2026', flagged: 'Active' },
-        { id: 'TXN-003', user: 'Emma Wilson', type: 'Expense', amount: '-$5.50', category: 'Food', date: 'Mar 3, 2026', flagged: 'Active' },
-        { id: 'TXN-004', user: 'Alex Brown', type: 'Transfer', amount: '-$500.00', category: 'Transfer', date: 'Mar 2, 2026', flagged: 'Suspended' },
-        { id: 'TXN-005', user: 'Lisa Davis', type: 'Expense', amount: '-$1,200.00', category: 'Rent', date: 'Mar 1, 2026', flagged: 'Active' },
-        { id: 'TXN-006', user: 'Tom Harris', type: 'Income', amount: '+$4,500.00', category: 'Salary', date: 'Mar 1, 2026', flagged: 'Active' },
-        { id: 'TXN-007', user: 'Jake Miller', type: 'Expense', amount: '-$2,500.00', category: 'Unknown', date: 'Feb 28, 2026', flagged: 'Suspended' },
-        { id: 'TXN-008', user: 'David Kim', type: 'Expense', amount: '-$89.99', category: 'Subscriptions', date: 'Feb 28, 2026', flagged: 'Active' },
-    ];
+    transactions: any[] = [];
+    currentPage = 0;
+    totalPages = 1;
+
+    ngOnInit() {
+        this.loadTransactions();
+    }
+
+    loadTransactions() {
+        this.isLoading = true;
+        this.adminService.getAdminTransactions(this.currentPage, 10).subscribe({
+            next: (res) => {
+                const pageData = res.data || res;
+                this.transactions = ((pageData as any).content || []).map((t: any) => ({
+                    id: t.transactionId,
+                    user: t.userName,
+                    type: t.transactionType,
+                    amount: (t.transactionType === 'INCOME' ? '+$' : '-$') + t.amount,
+                    category: t.category || 'N/A',
+                    date: new Date(t.date).toLocaleDateString(),
+                    flagged: t.userStatus === 'ACTIVE' ? 'Active' : 'Suspended',
+                    description: t.description || 'No description'
+                }));
+                this.totalPages = (pageData as any).totalPages || 1;
+                this.currentPage = (pageData as any).number ?? this.currentPage;
+                this.isLoading = false;
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                this.errorMessage = 'Failed to load transactions.';
+                this.isLoading = false;
+                this.cdr.detectChanges();
+            }
+        });
+    }
+
+    nextPage() {
+        if (this.currentPage < this.totalPages - 1) {
+            this.currentPage++;
+            this.loadTransactions();
+        }
+    }
+
+    prevPage() {
+        if (this.currentPage > 0) {
+            this.currentPage--;
+            this.loadTransactions();
+        }
+    }
 }

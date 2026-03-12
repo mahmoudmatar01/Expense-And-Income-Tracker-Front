@@ -1,11 +1,16 @@
 <app-page-header title="Transactions" subtitle="Track all your income and expenses"></app-page-header>
 
 <app-data-table [columns]="columns" [data]="transactions" [searchable]="true" searchPlaceholder="Search transactions..."
-    [filterOptions]="['Income', 'Expense']" filterLabel="All Types" filterKey="type" [showActions]="true">
-    <ng-template #rowActions let-row>
-        <button class="icon-btn" title="Edit"><span class="material-icons">edit</span></button>
-    </ng-template>
+    [filterOptions]="['INCOME', 'EXPENSE']" filterLabel="All Types" filterKey="type" [showActions]="false">
 </app-data-table>
+
+<!-- Pagination Control -->
+<div
+    style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1rem; padding: 0 1rem;">
+    <button class="btn-outline" (click)="prevPage()" [disabled]="currentPage === 0">Previous</button>
+    <span style="font-size: 0.875rem;">Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+    <button class="btn-outline" (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">Next</button>
+</div>
 
 <button class="fab" (click)="showModal = true" title="Add Transaction">
     <span class="material-icons">add</span>
@@ -16,8 +21,8 @@
         <div class="form-group">
             <label class="form-label">Type</label>
             <select class="form-control" [(ngModel)]="newTxn.type">
-                <option value="Income">Income</option>
-                <option value="Expense">Expense</option>
+                <option value="INCOME">Income</option>
+                <option value="EXPENSE">Expense</option>
             </select>
         </div>
         <div class="form-group">
@@ -26,23 +31,18 @@
         </div>
     </div>
     <div class="form-row">
-        <div class="form-group">
-            <label class="form-label">Category</label>
-            <select class="form-control" [(ngModel)]="newTxn.category">
-                <option value="Groceries">Groceries</option>
-                <option value="Salary">Salary</option>
-                <option value="Utilities">Utilities</option>
-                <option value="Entertainment">Entertainment</option>
-                <option value="Transport">Transport</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Food">Food</option>
+        <div class="form-group" *ngIf="newTxn.type === 'EXPENSE'">
+            <label class="form-label">Category (Required for Expense)</label>
+            <select class="form-control" [(ngModel)]="newTxn.categoryId">
+                <option [ngValue]="null">Select Category</option>
+                <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.name }}</option>
             </select>
         </div>
         <div class="form-group">
             <label class="form-label">Wallet</label>
-            <select class="form-control" [(ngModel)]="newTxn.wallet">
-                <option value="Main Wallet">Main Wallet</option>
-                <option value="Savings">Savings</option>
+            <select class="form-control" [(ngModel)]="newTxn.walletId">
+                <option [ngValue]="null">Select Wallet</option>
+                <option *ngFor="let wallet of wallets" [ngValue]="wallet.id">{{ wallet.name }}</option>
             </select>
         </div>
     </div>
@@ -50,12 +50,10 @@
         <label class="form-label">Description</label>
         <input class="form-control" [(ngModel)]="newTxn.description" placeholder="What was this for?" />
     </div>
-    <div class="form-group">
-        <label class="form-label">Date</label>
-        <input class="form-control" type="date" [(ngModel)]="newTxn.date" />
-    </div>
     <div class="form-actions">
         <button class="btn-outline" (click)="showModal = false">Cancel</button>
-        <button class="btn btn-primary" (click)="addTransaction()">Add Transaction</button>
+        <button class="btn btn-primary" (click)="addTransaction()"
+            [disabled]="!newTxn.walletId || !newTxn.amount || (newTxn.type === 'EXPENSE' && !newTxn.categoryId)">Add
+            Transaction</button>
     </div>
 </app-modal>

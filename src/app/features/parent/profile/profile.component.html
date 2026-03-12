@@ -1,0 +1,88 @@
+<app-page-header title="My Profile" subtitle="View and manage your account"></app-page-header>
+
+<div class="alert alert-error" *ngIf="errorMessage">
+    <span class="material-icons alert-icon">error</span>
+    <span>{{ errorMessage }}</span>
+</div>
+
+<div class="alert alert-success" *ngIf="successMessage">
+    <span class="material-icons alert-icon">check_circle</span>
+    <span>{{ successMessage }}</span>
+</div>
+
+<div *ngIf="isLoading" style="text-align: center; padding: 3rem;">
+    <span class="spinner"></span>
+    <p style="margin-top: 1rem; color: var(--color-text-muted);">Loading profile...</p>
+</div>
+
+<ng-container *ngIf="!isLoading">
+    <!-- Profile Header Card -->
+    <div class="chart-card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 1.5rem;">
+            <div
+                style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #635BFF, #8b85ff); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.75rem;">
+                {{ profile.name ? profile.name.charAt(0).toUpperCase() : '?' }}
+            </div>
+            <div>
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--color-secondary); margin: 0;">
+                    {{ profile.name }}</h3>
+                <p style="font-size: 0.875rem; color: var(--color-text-muted); margin: 0.25rem 0;">{{ profile.email }}
+                </p>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                    <span
+                        style="font-size: 0.6875rem; font-weight: 600; padding: 0.2rem 0.75rem; border-radius: 20px; background: rgba(99,91,255,0.1); color: #635BFF;">
+                        {{ getRoleBadge() }}
+                    </span>
+                    <span
+                        style="font-size: 0.6875rem; font-weight: 600; padding: 0.2rem 0.75rem; border-radius: 20px;"
+                        [style.background]="profile.status === 'ACTIVE' ? 'rgba(46,204,113,0.1)' : 'rgba(231,76,60,0.1)'"
+                        [style.color]="profile.status === 'ACTIVE' ? '#2ECC71' : '#E74C3C'">
+                        {{ profile.status === 'ACTIVE' ? 'Active' : 'Suspended' }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Form -->
+    <div class="chart-card">
+        <h3 style="margin-bottom: 1.25rem;">Edit Profile</h3>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input class="form-control" [(ngModel)]="editForm.name" placeholder="Your name" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input class="form-control" type="email" [(ngModel)]="editForm.email" placeholder="Your email" />
+            </div>
+        </div>
+
+        <h4 style="margin: 1.5rem 0 1rem; font-size: 0.9375rem; color: var(--color-secondary);">Change Password
+            (optional)</h4>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Current Password</label>
+                <input class="form-control" type="password" [(ngModel)]="editForm.currentPassword"
+                    placeholder="Enter current password" />
+            </div>
+            <div class="form-group">
+                <label class="form-label">New Password</label>
+                <input class="form-control" type="password" [(ngModel)]="editForm.newPassword"
+                    placeholder="Enter new password" />
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button class="btn btn-primary" (click)="saveProfile()" [disabled]="isSaving || !isDirty"
+                [class.loading]="isSaving">
+                <span *ngIf="!isSaving">Save Changes</span>
+                <span *ngIf="isSaving">
+                    <span class="spinner" style="width: 16px; height: 16px;"></span> Saving...
+                </span>
+            </button>
+        </div>
+    </div>
+</ng-container>

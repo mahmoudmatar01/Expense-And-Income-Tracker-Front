@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { DataTableComponent, TableColumn } from '../../../shared/components/data-table/data-table.component';
 import { ModalComponent } from '../../../shared/components/modal/modal.component';
+import { AdminService } from '../../../core/services/admin.service';
 
 @Component({
     selector: 'app-users-management',
@@ -12,7 +13,12 @@ import { ModalComponent } from '../../../shared/components/modal/modal.component
     templateUrl: './users-management.component.html',
     styleUrls: ['../../../shared/styles/pages.css']
 })
-export class UsersManagementComponent {
+export class UsersManagementComponent implements OnInit {
+    private adminService = inject(AdminService);
+    private cdr = inject(ChangeDetectorRef);
+
+    isLoading = true;
+    errorMessage = '';
     showUserModal = false;
     selectedUser: any = null;
 
@@ -25,18 +31,55 @@ export class UsersManagementComponent {
         { key: 'joined', label: 'Joined' },
     ];
 
-    users = [
-        { name: 'Sarah Johnson', email: 'sarah@example.com', role: 'Parent', status: 'Active', transactions: 156, joined: 'Jan 15, 2026' },
-        { name: 'Mike Chen', email: 'mike@example.com', role: 'Parent', status: 'Active', transactions: 89, joined: 'Feb 2, 2026' },
-        { name: 'Emma Wilson', email: 'emma@example.com', role: 'Child', status: 'Active', transactions: 34, joined: 'Feb 10, 2026' },
-        { name: 'Alex Brown', email: 'alex@example.com', role: 'Child', status: 'Suspended', transactions: 12, joined: 'Feb 15, 2026' },
-        { name: 'Lisa Davis', email: 'lisa@example.com', role: 'Parent', status: 'Active', transactions: 210, joined: 'Dec 5, 2025' },
-        { name: 'Tom Harris', email: 'tom@example.com', role: 'Parent', status: 'Active', transactions: 67, joined: 'Mar 1, 2026' },
-        { name: 'Jake Miller', email: 'jake@example.com', role: 'Child', status: 'Active', transactions: 23, joined: 'Jan 20, 2026' },
-        { name: 'Sophie Turner', email: 'sophie@example.com', role: 'Child', status: 'Suspended', transactions: 8, joined: 'Feb 28, 2026' },
-        { name: 'David Kim', email: 'david@example.com', role: 'Parent', status: 'Active', transactions: 145, joined: 'Nov 10, 2025' },
-        { name: 'Mia Garcia', email: 'mia@example.com', role: 'Child', status: 'Active', transactions: 41, joined: 'Jan 8, 2026' },
-    ];
+    users: any[] = [];
+    currentPage = 0;
+    totalPages = 1;
+
+    ngOnInit() {
+        this.loadUsers();
+    }
+
+    loadUsers() {
+        this.isLoading = true;
+        this.errorMessage = '';
+        this.adminService.getUsers(this.currentPage, 10).subscribe({
+            next: (res) => {
+                const pageData = res.data || res;
+                this.users = ((pageData as any).content || []).map((u: any) => ({
+                    id: u.id,
+                    name: u.name,
+                    email: u.email,
+                    role: u.user_role === 'ROLE_PARENT' ? 'Parent' : u.user_role === 'ROLE_CHILD' ? 'Child' : 'Admin',
+                    status: u.user_status === 'ACTIVE' ? 'Active' : 'Suspended',
+                    transactions: u.numOfTransaction || 0,
+                    joined: new Date(u.date_joined).toLocaleDateString()
+                }));
+                this.totalPages = (pageData as any).totalPages || 1;
+                this.currentPage = (pageData as any).number ?? this.currentPage;
+                this.isLoading = false;
+                this.cdr.detectChanges();
+            },
+            error: (err) => {
+                this.errorMessage = 'Failed to load users.';
+                this.isLoading = false;
+                this.cdr.detectChanges();
+            }
+        });
+    }
+
+    nextPage() {
+        if (this.currentPage < this.totalPages - 1) {
+            this.currentPage++;
+            this.loadUsers();
+        }
+    }
+
+    prevPage() {
+        if (this.currentPage > 0) {
+            this.currentPage--;
+            this.loadUsers();
+        }
+    }
 
     viewUser(user: any) {
         this.selectedUser = user;
@@ -44,14 +87,44 @@ export class UsersManagementComponent {
     }
 
     suspendUser(user: any) {
-        user.status = 'Suspended';
+        this.adminService.changeUserStatus(user.id).subscribe({
+            next: () => {
+                this.loadUsers();
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                alert('Failed to change user status.');
+                this.cdr.detectChanges();
+            }
+        });
     }
 
     activateUser(user: any) {
-        user.status = 'Active';
+        this.adminService.changeUserStatus(user.id).subscribe({
+            next: () => {
+                this.loadUsers();
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                alert('Failed to change user status.');
+                this.cdr.detectChanges();
+            }
+        });
     }
 
     deleteUser(user: any) {
-        this.users = this.users.filter(u => u.email !== user.email);
+        if (confirm(`Are you sure you want to delete ${user.name}?`)) {
+            this.adminService.deleteUser(user.id).subscribe({
+                next: () => {
+                    this.loadUsers();
+                    this.showUserModal = false;
+                    this.cdr.detectChanges();
+                },
+                error: () => {
+                    alert('Failed to delete user.');
+                    this.cdr.detectChanges();
+                }
+            });
+        }
     }
 }

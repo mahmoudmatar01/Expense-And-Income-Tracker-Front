@@ -11,8 +11,8 @@ import { AuthService } from '../../core/services/auth.service';
     styleUrls: ['./header.component.css']
 })
 export class HeaderComponent {
-    authService = inject(AuthService);
-    router = inject(Router);
+    private authService = inject(AuthService);
+    private router = inject(Router);
 
     @Output() menuToggle = new EventEmitter<void>();
 
@@ -20,7 +20,7 @@ export class HeaderComponent {
         return this.authService.currentUserValue;
     }
 
-    logout() {
+    logout(): void {
         this.authService.logout();
         this.router.navigate(['/login']);
     }

@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { DataTableComponent, TableColumn } from '../../../shared/components/data-table/data-table.component';
 import { ModalComponent } from '../../../shared/components/modal/modal.component';
+import { ChildAccountService } from '../../../core/services/child-account.service';
 
 @Component({
     selector: 'app-parent-children',
@@ -12,7 +13,12 @@ import { ModalComponent } from '../../../shared/components/modal/modal.component
     templateUrl: './children.component.html',
     styleUrls: ['../../../shared/styles/pages.css']
 })
-export class ParentChildrenComponent {
+export class ParentChildrenComponent implements OnInit {
+    private childService = inject(ChildAccountService);
+    private cdr = inject(ChangeDetectorRef);
+
+    isLoading = true;
+    errorMessage = '';
     showModal = false;
     selectedChild: any = null;
 
@@ -20,40 +26,79 @@ export class ParentChildrenComponent {
         { key: 'name', label: 'Name' },
         { key: 'email', label: 'Email' },
         { key: 'status', label: 'Status', type: 'status' },
-        { key: 'allowance', label: 'Allowance' },
-        { key: 'spendingLimit', label: 'Spending Limit' },
-        { key: 'totalSpent', label: 'Total Spent' },
+        { key: 'spendingLimit', label: 'Spending Limit ($)' },
+        { key: 'totalSpentThisMonth', label: 'Total Spent ($)' },
     ];
 
-    children = [
-        { name: 'Emma Wilson', email: 'emma@example.com', status: 'Active', allowance: '$100/mo', spendingLimit: '$100', totalSpent: '$45.50' },
-        { name: 'Jake Wilson', email: 'jake@example.com', status: 'Active', allowance: '$75/mo', spendingLimit: '$75', totalSpent: '$23.00' },
-        { name: 'Mia Wilson', email: 'mia@example.com', status: 'Active', allowance: '$100/mo', spendingLimit: '$100', totalSpent: '$67.80' },
-    ];
+    children: any[] = [];
 
-    newChild = { name: '', email: '', allowance: 0, spendingLimit: 0 };
+    newChild = { name: '', email: '', password: '', spendingLimit: 0 };
+
+    ngOnInit() {
+        this.loadChildren();
+    }
+
+    loadChildren() {
+        this.isLoading = true;
+        this.childService.getParentChildren().subscribe({
+            next: (res) => {
+                const childrenData = res.success && res.data ? res.data : [];
+                this.children = childrenData.map(c => ({
+                    ...c,
+                    status: c.status === 'ACTIVE' ? 'Active' : 'Inactive'
+                }));
+                this.isLoading = false;
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                this.errorMessage = 'Failed to load children.';
+                this.isLoading = false;
+                this.cdr.detectChanges();
+            }
+        });
+    }
 
     openAdd() {
         this.selectedChild = null;
-        this.newChild = { name: '', email: '', allowance: 0, spendingLimit: 0 };
+        this.newChild = { name: '', email: '', password: '', spendingLimit: 0 };
         this.showModal = true;
     }
 
     saveChild() {
-        if (!this.selectedChild) {
-            this.children.push({
-                name: this.newChild.name,
-                email: this.newChild.email,
-                status: 'Active',
-                allowance: '$' + this.newChild.allowance + '/mo',
-                spendingLimit: '$' + this.newChild.spendingLimit,
-                totalSpent: '$0.00'
-            });
+        if (!this.newChild.name || !this.newChild.email || !this.newChild.password) {
+            return;
         }
-        this.showModal = false;
+
+        const payload = {
+            name: this.newChild.name,
+            email: this.newChild.email,
+            password: this.newChild.password,
+            spendingLimit: this.newChild.spendingLimit
+        };
+
+        this.childService.createChild(payload).subscribe({
+            next: () => {
+                this.loadChildren();
+                this.showModal = false;
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                alert('Failed to create child account.');
+                this.cdr.detectChanges();
+            }
+        });
     }
 
     deactivateChild(child: any) {
-        child.status = child.status === 'Active' ? 'Inactive' : 'Active';
+        this.childService.updateChildStatus(child.id).subscribe({
+            next: () => {
+                this.loadChildren();
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                alert('Failed to change child status.');
+                this.cdr.detectChanges();
+            }
+        });
     }
 }

@@ -1,9 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartConfiguration } from 'chart.js';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { StatCardComponent } from '../../../shared/components/stat-card/stat-card.component';
+import { WalletService } from '../../../core/services/wallet.service';
+import { CategoryService } from '../../../core/services/category.service';
+import { ChildAccountService } from '../../../core/services/child-account.service';
+import { TransactionService } from '../../../core/services/transaction.service';
 
 @Component({
     selector: 'app-parent-dashboard',
@@ -12,13 +16,22 @@ import { StatCardComponent } from '../../../shared/components/stat-card/stat-car
     templateUrl: './parent-dashboard.component.html',
     styleUrls: ['./parent-dashboard.component.css', '../../../shared/styles/pages.css']
 })
-export class ParentDashboardComponent {
-    public chartOptions: ChartConfiguration['options'] = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: 'bottom' } },
-        scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.04)' } }, x: { grid: { display: false } } }
-    };
+export class ParentDashboardComponent implements OnInit {
+    private walletService = inject(WalletService);
+    private categoryService = inject(CategoryService);
+    private childService = inject(ChildAccountService);
+    private transactionService = inject(TransactionService);
+    private cdr = inject(ChangeDetectorRef);
+
+    isLoading = true;
+    errorMessage = '';
+
+    totalBalance = 0;
+    budgetRemaining = 0;
+    monthlyExpenses = 0;
+
+    recentTransactions: any[] = [];
+    childrenSpending: any[] = [];
 
     public pieOptions: ChartConfiguration['options'] = {
         responsive: true,
@@ -26,40 +39,108 @@ export class ParentDashboardComponent {
         plugins: { legend: { position: 'bottom' } }
     };
 
-    public pieChartData: ChartData<'doughnut'> = {
-        labels: ['Groceries', 'Utilities', 'Entertainment', 'Transport', 'Shopping'],
-        datasets: [{
-            data: [300, 150, 100, 80, 120],
-            backgroundColor: ['#635BFF', '#2ECC71', '#E74C3C', '#F39C12', '#3498DB']
-        }]
-    };
+    public pieChartData: ChartData<'doughnut'> | null = null;
 
-    public spendingChart: ChartData<'bar'> = {
-        labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-        datasets: [
-            { data: [1200, 1450, 1100, 1680, 1320, 980], label: 'Spending', backgroundColor: '#E74C3C', borderRadius: 6 },
-            { data: [3000, 3200, 2800, 3500, 3100, 3000], label: 'Income', backgroundColor: '#2ECC71', borderRadius: 6 }
-        ]
-    };
+    ngOnInit() {
+        this.loadWallets();
+        this.loadCategories();
+        this.loadChildren();
+        this.loadTransactions();
+    }
 
-    public balanceChart: ChartData<'line'> = {
-        labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-        datasets: [
-            { data: [3200, 4950, 6650, 8470, 10250, 12270], label: 'Balance', borderColor: '#635BFF', tension: 0.4, fill: true, backgroundColor: 'rgba(99,91,255,0.08)' }
-        ]
-    };
+    loadWallets() {
+        this.walletService.getParentWallets().subscribe({
+            next: (res) => {
+                if (res.success && res.data) {
+                    this.totalBalance = res.data.reduce((sum, w) => sum + w.balance, 0);
+                }
+                this.isLoading = false;
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                this.errorMessage = 'Failed to load wallet data.';
+                this.isLoading = false;
+                this.cdr.detectChanges();
+            }
+        });
+    }
 
-    recentTransactions = [
-        { date: 'Mar 4, 2026', category: 'Groceries', wallet: 'Main Wallet', type: 'Expense', amount: '-$150.00' },
-        { date: 'Mar 3, 2026', category: 'Salary', wallet: 'Main Wallet', type: 'Income', amount: '+$3,000.00' },
-        { date: 'Mar 2, 2026', category: 'Utilities', wallet: 'Main Wallet', type: 'Expense', amount: '-$75.50' },
-        { date: 'Mar 1, 2026', category: 'Entertainment', wallet: 'Savings', type: 'Expense', amount: '-$45.00' },
-        { date: 'Feb 28, 2026', category: 'Freelance', wallet: 'Main Wallet', type: 'Income', amount: '+$500.00' },
-    ];
+    loadCategories() {
+        this.categoryService.getCategoriesDetails().subscribe({
+            next: (res) => {
+                if (res.success && res.data) {
+                    let totalLimit = 0;
+                    let totalSpent = 0;
 
-    childrenSpending = [
-        { name: 'Emma', spent: 45.50, limit: 100, avatar: 'E' },
-        { name: 'Jake', spent: 23.00, limit: 75, avatar: 'J' },
-        { name: 'Mia', spent: 67.80, limit: 100, avatar: 'M' },
-    ];
+                    const labels: string[] = [];
+                    const data: number[] = [];
+
+                    res.data.forEach(c => {
+                        totalLimit += (c.budgetLimit || 0);
+                        totalSpent += (c.usedAmount || 0);
+
+                        if (c.usedAmount > 0) {
+                            labels.push(c.categoryName);
+                            data.push(c.usedAmount);
+                        }
+                    });
+
+                    this.monthlyExpenses = totalSpent;
+                    this.budgetRemaining = totalLimit - totalSpent;
+
+                    if (data.length > 0) {
+                        this.pieChartData = {
+                            labels,
+                            datasets: [{
+                                data,
+                                backgroundColor: ['#635BFF', '#2ECC71', '#E74C3C', '#F39C12', '#3498DB', '#9B59B6', '#E91E63']
+                            }]
+                        };
+                    }
+                    this.cdr.detectChanges();
+                }
+            },
+            error: () => { 
+                this.cdr.detectChanges();
+            }
+        });
+    }
+
+    loadChildren() {
+        this.childService.getParentChildren().subscribe({
+            next: (res) => {
+                const childrenData = res.success && res.data ? res.data : [];
+                this.childrenSpending = childrenData.map(c => ({
+                    name: c.name,
+                    spent: c.totalSpentThisMonth || 0,
+                    limit: c.spendingLimit || 0,
+                    avatar: c.name.charAt(0).toUpperCase()
+                }));
+                this.cdr.detectChanges();
+            },
+            error: () => { 
+                this.cdr.detectChanges();
+            }
+        });
+    }
+
+    loadTransactions() {
+        this.transactionService.getParentTransactions(0, 5).subscribe({
+            next: (res) => {
+                const pageData = res.data || res;
+                this.recentTransactions = ((pageData as any).content || []).map((t: any) => ({
+                    date: new Date(t.date || t.createdAt).toLocaleDateString(),
+                    category: t.category || t.categoryName || 'None',
+                    wallet: t.wallet || t.walletName,
+                    type: t.type,
+                    amount: (t.type === 'INCOME' ? '+$' : '-$') + t.amount,
+                    description: t.description || 'No description'
+                }));
+                this.cdr.detectChanges();
+            },
+            error: () => { 
+                this.cdr.detectChanges();
+            }
+        });
+    }
 }

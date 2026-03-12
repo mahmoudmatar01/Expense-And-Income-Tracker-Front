@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { ModalComponent } from '../../../shared/components/modal/modal.component';
+import { CategoryService } from '../../../core/services/category.service';
+import { BudgetService } from '../../../core/services/budget.service';
 
 @Component({
     selector: 'app-parent-budgets',
@@ -11,35 +13,73 @@ import { ModalComponent } from '../../../shared/components/modal/modal.component
     templateUrl: './budgets.component.html',
     styleUrls: ['../../../shared/styles/pages.css']
 })
-export class ParentBudgetsComponent {
+export class ParentBudgetsComponent implements OnInit {
+    private categoryService = inject(CategoryService);
+    private budgetService = inject(BudgetService);
+    private cdr = inject(ChangeDetectorRef);
+
     Math = Math;
+
+    isLoading = true;
+    errorMessage = '';
     showModal = false;
 
-    budgets = [
-        { category: 'Groceries', limit: 500, spent: 300, icon: 'shopping_cart', color: '#635BFF' },
-        { category: 'Utilities', limit: 200, spent: 185, icon: 'power', color: '#3498DB' },
-        { category: 'Entertainment', limit: 150, spent: 100, icon: 'movie', color: '#E74C3C' },
-        { category: 'Transport', limit: 200, spent: 80, icon: 'directions_car', color: '#F39C12' },
-        { category: 'Shopping', limit: 300, spent: 290, icon: 'shopping_bag', color: '#9B59B6' },
-        { category: 'Food', limit: 400, spent: 250, icon: 'restaurant', color: '#2ECC71' },
-    ];
+    budgets: any[] = [];
+    allCategories: any[] = [];
 
     get totalBudget() { return this.budgets.reduce((s, b) => s + b.limit, 0); }
     get totalSpent() { return this.budgets.reduce((s, b) => s + b.spent, 0); }
     get totalRemaining() { return this.totalBudget - this.totalSpent; }
 
-    newBudget = { category: '', limit: 0 };
+    newBudget = { categoryId: null as number | null, limit: 0 };
+
+    ngOnInit() {
+        this.loadBudgets();
+    }
+
+    loadBudgets() {
+        this.isLoading = true;
+        this.categoryService.getCategoriesDetails().subscribe({
+            next: (res) => {
+                if (res.success) {
+                    this.allCategories = res.data;
+                    this.budgets = res.data
+                        .filter(c => c.budgetLimit > 0)
+                        .map(c => ({
+                            categoryId: c.categoryId,
+                            category: c.categoryName,
+                            limit: c.budgetLimit,
+                            spent: c.usedAmount || 0,
+                            icon: 'category',
+                            color: '#635BFF'
+                        }));
+                }
+                this.isLoading = false;
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                this.errorMessage = 'Failed to load budgets.';
+                this.isLoading = false;
+                this.cdr.detectChanges();
+            }
+        });
+    }
 
     addBudget() {
-        this.budgets.push({
-            category: this.newBudget.category,
-            limit: this.newBudget.limit,
-            spent: 0,
-            icon: 'category',
-            color: '#635BFF'
-        });
-        this.showModal = false;
-        this.newBudget = { category: '', limit: 0 };
+        if (this.newBudget.categoryId && this.newBudget.limit > 0) {
+            this.budgetService.createBudget(this.newBudget.categoryId, this.newBudget.limit).subscribe({
+                next: () => {
+                    this.loadBudgets();
+                    this.showModal = false;
+                    this.newBudget = { categoryId: null, limit: 0 };
+                    this.cdr.detectChanges();
+                },
+                error: () => {
+                    alert('Failed to set budget.');
+                    this.cdr.detectChanges();
+                }
+            });
+        }
     }
 
     getStatus(budget: any): string {

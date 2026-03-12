@@ -4,36 +4,81 @@
     searchPlaceholder="Search transactions...">
 </app-data-table>
 
-<button class="fab" (click)="showModal = true" title="Add Expense">
+<div class="alert alert-success" *ngIf="successMessage"
+    style="margin-bottom: 1rem; margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem; background: rgba(46, 204, 113, 0.1); color: var(--color-success); padding: 0.75rem 1rem; border-radius: 8px;">
+    <span class="material-icons alert-icon" style="font-size: 1.2rem;">check_circle</span>
+    <span style="font-weight: 500;">{{ successMessage }}</span>
+</div>
+
+<!-- Pagination Control -->
+<div
+    style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1rem; padding: 0 1rem;">
+    <button class="btn-outline" (click)="prevPage()" [disabled]="currentPage === 0">Previous</button>
+    <span style="font-size: 0.875rem;">Page {{ currentPage + 1 }} of {{ totalPages === 0 ? 1 : totalPages }}</span>
+    <button class="btn-outline" (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">Next</button>
+</div>
+
+
+<button class="fab" (click)="openModal()" title="Add Transaction">
     <span class="material-icons">add</span>
 </button>
 
-<app-modal [isOpen]="showModal" title="Add Expense" (close)="showModal = false">
-    <div class="form-row">
-        <div class="form-group">
-            <label class="form-label">Amount ($)</label>
-            <input class="form-control" type="number" [(ngModel)]="newExpense.amount" placeholder="0.00" />
+<app-modal [isOpen]="showModal" title="Add Transaction" (close)="showModal = false">
+    <form [formGroup]="txnForm" (ngSubmit)="submitTransaction()">
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Transaction Type</label>
+                <select class="form-control" formControlName="type">
+                    <option value="EXPENSE">Expense</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Amount ($)</label>
+                <input class="form-control" type="number" formControlName="amount" placeholder="0.00"
+                    [class.is-invalid]="txnForm.get('amount')?.invalid && txnForm.get('amount')?.touched" />
+                <div class="text-danger" *ngIf="txnForm.get('amount')?.invalid && txnForm.get('amount')?.touched"
+                    style="font-size: 12px; margin-top: 4px; color: var(--color-danger);">
+                    Amount must be greater than 0
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label class="form-label">Category</label>
-            <select class="form-control" [(ngModel)]="newExpense.category">
-                <option value="Food">Food</option>
-                <option value="Entertainment">Entertainment</option>
-                <option value="Shopping">Shopping</option>
-                <option value="Transport">Transport</option>
-            </select>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Wallet</label>
+                <select class="form-control" formControlName="walletId"
+                    [class.is-invalid]="txnForm.get('walletId')?.invalid && txnForm.get('walletId')?.touched">
+                    <option [ngValue]="null">Select Wallet</option>
+                    <option *ngFor="let w of wallets" [ngValue]="w.walletId">{{ w.walletName }}</option>
+                </select>
+                <div class="text-danger" *ngIf="txnForm.get('walletId')?.invalid && txnForm.get('walletId')?.touched"
+                    style="font-size: 12px; margin-top: 4px; color: var(--color-danger);">
+                    Wallet is required
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Category</label>
+                <select class="form-control" formControlName="categoryId"
+                    [class.is-invalid]="txnForm.get('categoryId')?.invalid && txnForm.get('categoryId')?.touched">
+                    <option [ngValue]="null">Select Category</option>
+                    <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.name }}</option>
+                </select>
+                <div class="text-danger"
+                    *ngIf="txnForm.get('categoryId')?.invalid && txnForm.get('categoryId')?.touched"
+                    style="font-size: 12px; margin-top: 4px; color: var(--color-danger);">
+                    Category is required for expenses
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="form-group">
-        <label class="form-label">Description</label>
-        <input class="form-control" [(ngModel)]="newExpense.description" placeholder="What did you buy?" />
-    </div>
-    <div class="form-group">
-        <label class="form-label">Date</label>
-        <input class="form-control" type="date" [(ngModel)]="newExpense.date" />
-    </div>
-    <div class="form-actions">
-        <button class="btn-outline" (click)="showModal = false">Cancel</button>
-        <button class="btn btn-primary" (click)="addExpense()">Add Expense</button>
-    </div>
+
+        <div class="form-group">
+            <label class="form-label">Description (Optional)</label>
+            <input class="form-control" formControlName="description" placeholder="What was this for?" />
+        </div>
+
+        <div class="form-actions" style="margin-top: 2rem;">
+            <button type="button" class="btn-outline" (click)="showModal = false">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="txnForm.invalid">Save Transaction</button>
+        </div>
+    </form>
 </app-modal>

@@ -1,28 +1,44 @@
 <app-page-header title="My Wallet" subtitle="View your wallet balance and history"></app-page-header>
 
-<div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-bottom: 2rem;">
-    <app-stat-card label="Current Balance" value="${{ balance | number:'1.2-2' }}" icon="account_balance_wallet"
-        iconColor="#635BFF" iconBg="rgba(99,91,255,0.1)" [gradient]="true"></app-stat-card>
-    <app-stat-card label="Last Allowance" value="${{ allowanceReceived | number:'1.2-2' }}" icon="monetization_on"
-        iconColor="#2ECC71" iconBg="rgba(46,204,113,0.1)" change="Received Mar 3"></app-stat-card>
+<div class="alert alert-error" *ngIf="errorMessage">
+    <span class="material-icons alert-icon">error</span>
+    <span>{{ errorMessage }}</span>
 </div>
 
-<div class="chart-card">
-    <h3 style="margin-bottom: 1rem;">Transaction History</h3>
-    <div class="wallet-txn-list">
-        <div class="wallet-txn" *ngFor="let txn of transactions">
-            <div class="txn-left">
-                <div class="txn-icon" [class.income]="txn.amount > 0">
-                    <span class="material-icons">{{ txn.icon }}</span>
+<div *ngIf="isLoading" style="text-align: center; padding: 3rem;">
+    <span class="spinner"></span>
+    <p style="margin-top: 1rem; color: var(--color-text-muted);">Loading wallet...</p>
+</div>
+
+<ng-container *ngIf="!isLoading && !errorMessage">
+    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-bottom: 2rem;">
+        <app-stat-card label="Current Balance" [value]="'$' + (balance | number:'1.2-2')" icon="account_balance_wallet"
+            iconColor="#635BFF" iconBg="rgba(99,91,255,0.1)" [gradient]="true"></app-stat-card>
+        <app-stat-card label="Currency" [value]="currency" icon="monetization_on"
+            iconColor="#2ECC71" iconBg="rgba(46,204,113,0.1)"></app-stat-card>
+    </div>
+
+    <div class="chart-card">
+        <h3 style="margin-bottom: 1rem;">Transaction History</h3>
+        <div class="wallet-txn-list">
+            <div class="wallet-txn" *ngFor="let txn of transactions">
+                <div class="txn-left">
+                    <div class="txn-icon" [class.income]="txn.amount > 0">
+                        <span class="material-icons">{{ txn.icon }}</span>
+                    </div>
+                    <div class="txn-info">
+                        <span class="txn-name">{{ txn.description }}</span>
+                        <span class="txn-date">{{ txn.date }} · {{ txn.type }}</span>
+                    </div>
                 </div>
-                <div class="txn-info">
-                    <span class="txn-name">{{ txn.description }}</span>
-                    <span class="txn-date">{{ txn.date }} · {{ txn.type }}</span>
-                </div>
+                <span class="txn-amt" [class.positive]="txn.amount > 0" [class.negative]="txn.amount < 0">
+                    {{ txn.amount > 0 ? '+' : '' }}${{ (txn.amount < 0 ? -txn.amount : txn.amount) | number:'1.2-2' }}
+                </span>
             </div>
-            <span class="txn-amt" [class.positive]="txn.amount > 0" [class.negative]="txn.amount < 0">
-                {{ txn.amount > 0 ? '+' : '' }}${{ (txn.amount < 0 ? -txn.amount : txn.amount) | number:'1.2-2' }}
-                    </span>
+            <div *ngIf="transactions.length === 0"
+                style="text-align: center; color: var(--color-text-muted); padding: 2rem;">
+                No transactions yet.
+            </div>
         </div>
     </div>
-</div>
+</ng-container>

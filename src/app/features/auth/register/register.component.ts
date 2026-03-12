@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
     ReactiveFormsModule,
@@ -9,7 +9,8 @@ import {
     ValidationErrors,
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService, RegisterPayload } from '../../../core/services/auth.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { RegisterRequest } from '../../../core/interfaces/RegisterRequest';
 
 @Component({
     selector: 'app-register',
@@ -22,16 +23,18 @@ export class RegisterComponent {
     private fb = inject(FormBuilder);
     private authService = inject(AuthService);
     private router = inject(Router);
+    private cdr = inject(ChangeDetectorRef);
 
     isLoading = false;
     errorMessage = '';
     successMessage = '';
+
     showPassword = false;
     showConfirmPassword = false;
 
     registerForm: FormGroup = this.fb.group(
         {
-            name: ['', [Validators.required, Validators.minLength(2)]],
+            fullName: ['', [Validators.required, Validators.minLength(2)]],
             email: ['', [Validators.required, Validators.email]],
             password: ['', [Validators.required, Validators.minLength(8)]],
             confirmPassword: ['', [Validators.required]],
@@ -40,10 +43,10 @@ export class RegisterComponent {
         { validators: this.passwordMatchValidator }
     );
 
-    /** Cross-field validator: password and confirmPassword must match */
     passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
         const password = control.get('password')?.value;
         const confirm = control.get('confirmPassword')?.value;
+
         if (password && confirm && password !== confirm) {
             control.get('confirmPassword')?.setErrors({ passwordMismatch: true });
             return { passwordMismatch: true };
@@ -51,18 +54,15 @@ export class RegisterComponent {
         return null;
     }
 
-    /** Quick accessors for template validation */
     get f() {
         return this.registerForm.controls;
     }
 
-    /** Toggle password visibility */
     togglePassword(field: 'password' | 'confirm'): void {
         if (field === 'password') this.showPassword = !this.showPassword;
         else this.showConfirmPassword = !this.showConfirmPassword;
     }
 
-    /** Password strength indicator */
     get passwordStrength(): { label: string; color: string; width: string } {
         const pw = this.registerForm.get('password')?.value || '';
         if (!pw) return { label: '', color: '', width: '0%' };
@@ -82,7 +82,6 @@ export class RegisterComponent {
     }
 
     onSubmit(): void {
-        // Mark all fields as touched to show validation errors
         this.registerForm.markAllAsTouched();
 
         if (this.registerForm.invalid) return;
@@ -91,11 +90,11 @@ export class RegisterComponent {
         this.errorMessage = '';
         this.successMessage = '';
 
-        const payload: RegisterPayload = {
-            name: this.registerForm.value.name.trim(),
+        const payload: RegisterRequest = {
+            fullName: this.registerForm.value.fullName.trim(),
             email: this.registerForm.value.email.trim().toLowerCase(),
             password: this.registerForm.value.password,
-            role: 'PARENT',
+            confirmPassword: this.registerForm.value.confirmPassword
         };
 
         this.authService.register(payload).subscribe({
@@ -103,13 +102,16 @@ export class RegisterComponent {
                 this.isLoading = false;
                 this.successMessage =
                     'Account created successfully! Redirecting to login...';
-                setTimeout(() => this.router.navigate(['/login']), 2000);
+                setTimeout(() => this.router.navigate(['/login']), 1500);
             },
             error: (err) => {
                 this.isLoading = false;
-                this.errorMessage =
-                    err?.error?.message ||
-                    'Registration failed. Please try again.';
+                if (err.status === 400 || err.status === 422) {
+                    this.errorMessage = 'Registration failed. Please check your information and try again.';
+                } else {
+                    this.errorMessage = err?.error?.message || 'Something went wrong. Please try again later.';
+                }
+                this.cdr.detectChanges();
             },
         });
     }

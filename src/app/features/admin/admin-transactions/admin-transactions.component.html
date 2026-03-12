@@ -1,14 +1,26 @@
 <app-page-header title="Transactions Monitoring" subtitle="Track all system-wide transactions"></app-page-header>
 
-<app-data-table [columns]="columns" [data]="transactions" [searchable]="true"
-    searchPlaceholder="Search by user, category, or ID..." [filterOptions]="['Income', 'Expense', 'Transfer']"
-    filterLabel="All Types" filterKey="type" [showActions]="true">
-    <ng-template #rowActions let-row>
-        <button class="icon-btn" title="View Details">
-            <span class="material-icons">visibility</span>
-        </button>
-        <button class="icon-btn" *ngIf="row.flagged === 'Active'" title="Flag as suspicious">
-            <span class="material-icons" style="color: #F39C12;">flag</span>
-        </button>
-    </ng-template>
-</app-data-table>
+<div class="alert alert-error" *ngIf="errorMessage">
+    <span class="material-icons alert-icon">error</span>
+    <span>{{ errorMessage }}</span>
+</div>
+
+<div *ngIf="isLoading" style="text-align: center; padding: 3rem;">
+    <span class="spinner"></span>
+    <p style="margin-top: 1rem; color: var(--color-text-muted);">Loading transactions...</p>
+</div>
+
+<ng-container *ngIf="!isLoading && !errorMessage">
+    <app-data-table [columns]="columns" [data]="transactions" [searchable]="true"
+        searchPlaceholder="Search by user, category, or ID..." [filterOptions]="['INCOME', 'EXPENSE']"
+        filterLabel="All Types" filterKey="type">
+    </app-data-table>
+
+    <!-- Pagination Control -->
+    <div
+        style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1rem; padding: 0 1rem;">
+        <button class="btn-outline" (click)="prevPage()" [disabled]="currentPage === 0">Previous</button>
+        <span style="font-size: 0.875rem;">Page {{ currentPage + 1 }} of {{ totalPages === 0 ? 1 : totalPages }}</span>
+        <button class="btn-outline" (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">Next</button>
+    </div>
+</ng-container>

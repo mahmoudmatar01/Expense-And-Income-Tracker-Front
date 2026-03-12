@@ -1,9 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { DataTableComponent, TableColumn } from '../../../shared/components/data-table/data-table.component';
 import { ModalComponent } from '../../../shared/components/modal/modal.component';
+import { TransactionService } from '../../../core/services/transaction.service';
+import { WalletService } from '../../../core/services/wallet.service';
+import { CategoryService } from '../../../core/services/category.service';
 
 @Component({
     selector: 'app-parent-transactions',
@@ -12,7 +15,14 @@ import { ModalComponent } from '../../../shared/components/modal/modal.component
     templateUrl: './transactions.component.html',
     styleUrls: ['../../../shared/styles/pages.css']
 })
-export class ParentTransactionsComponent {
+export class ParentTransactionsComponent implements OnInit {
+    private transactionService = inject(TransactionService);
+    private walletService = inject(WalletService);
+    private categoryService = inject(CategoryService);
+    private cdr = inject(ChangeDetectorRef);
+
+    isLoading = true;
+    errorMessage = '';
     showModal = false;
 
     columns: TableColumn[] = [
@@ -20,36 +30,117 @@ export class ParentTransactionsComponent {
         { key: 'description', label: 'Description' },
         { key: 'category', label: 'Category', type: 'badge' },
         { key: 'wallet', label: 'Wallet' },
-        { key: 'type', label: 'Type', type: 'badge', badgeColors: { Income: '#2ECC71', Expense: '#E74C3C' } },
+        { key: 'type', label: 'Type', type: 'badge', badgeColors: { INCOME: '#2ECC71', EXPENSE: '#E74C3C' } },
         { key: 'amount', label: 'Amount', type: 'amount' },
     ];
 
-    transactions = [
-        { date: 'Mar 4, 2026', description: 'Weekly groceries', category: 'Groceries', wallet: 'Main Wallet', type: 'Expense', amount: '-$150.00' },
-        { date: 'Mar 3, 2026', description: 'Monthly salary', category: 'Salary', wallet: 'Main Wallet', type: 'Income', amount: '+$3,000.00' },
-        { date: 'Mar 2, 2026', description: 'Electric bill', category: 'Utilities', wallet: 'Main Wallet', type: 'Expense', amount: '-$75.50' },
-        { date: 'Mar 1, 2026', description: 'Cinema tickets', category: 'Entertainment', wallet: 'Savings', type: 'Expense', amount: '-$45.00' },
-        { date: 'Feb 28, 2026', description: 'Freelance project', category: 'Freelance', wallet: 'Main Wallet', type: 'Income', amount: '+$500.00' },
-        { date: 'Feb 27, 2026', description: 'Gas station', category: 'Transport', wallet: 'Main Wallet', type: 'Expense', amount: '-$60.00' },
-        { date: 'Feb 26, 2026', description: 'Restaurant dinner', category: 'Food', wallet: 'Main Wallet', type: 'Expense', amount: '-$85.00' },
-        { date: 'Feb 25, 2026', description: 'Online shopping', category: 'Shopping', wallet: 'Savings', type: 'Expense', amount: '-$120.00' },
-        { date: 'Feb 24, 2026', description: 'Bonus', category: 'Salary', wallet: 'Main Wallet', type: 'Income', amount: '+$750.00' },
-        { date: 'Feb 23, 2026', description: 'Gym membership', category: 'Health', wallet: 'Main Wallet', type: 'Expense', amount: '-$50.00' },
-    ];
+    transactions: any[] = [];
+    wallets: any[] = [];
+    categories: any[] = [];
 
-    newTxn = { type: 'Expense', amount: '', category: '', wallet: 'Main Wallet', description: '', date: '' };
+    // Pagination
+    currentPage = 0;
+    totalPages = 1;
+
+    newTxn = { type: 'EXPENSE', amount: null as number | null, categoryId: null as number | null, walletId: null as number | null, description: '' };
+
+    ngOnInit() {
+        this.loadTransactions();
+        this.loadWallets();
+        this.loadCategories();
+    }
+
+    loadTransactions() {
+        this.isLoading = true;
+        this.transactionService.getParentTransactions(this.currentPage, 10).subscribe({
+            next: (res) => {
+                const pageData = res.data || res;
+                this.transactions = ((pageData as any).content || []).map((t: any) => {
+                    const prefix = t.type === 'INCOME' ? '+$' : '-$';
+                    return {
+                        ...t,
+                        date: new Date(t.date || t.createdAt).toLocaleDateString(),
+                        amount: prefix + t.amount,
+                        wallet: t.wallet || t.walletName,
+                        category: t.category || t.categoryName || 'None',
+                        description: t.description || 'No description'
+                    };
+                });
+                this.totalPages = (pageData as any).totalPages || 1;
+                this.currentPage = (pageData as any).number ?? this.currentPage;
+                this.isLoading = false;
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                this.errorMessage = 'Failed to load transactions.';
+                this.isLoading = false;
+                this.cdr.detectChanges();
+            }
+        });
+    }
+
+    nextPage() {
+        if (this.currentPage < this.totalPages - 1) {
+            this.currentPage++;
+            this.loadTransactions();
+        }
+    }
+
+    prevPage() {
+        if (this.currentPage > 0) {
+            this.currentPage--;
+            this.loadTransactions();
+        }
+    }
+
+    loadWallets() {
+        this.walletService.getParentWallets().subscribe({
+            next: (res) => {
+                if (res.success) this.wallets = res.data;
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                this.cdr.detectChanges();
+            }
+        });
+    }
+
+    loadCategories() {
+        this.categoryService.getCategories().subscribe({
+            next: (res) => {
+                if (res.success) this.categories = res.data;
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                this.cdr.detectChanges();
+            }
+        });
+    }
 
     addTransaction() {
-        const prefix = this.newTxn.type === 'Income' ? '+$' : '-$';
-        this.transactions.unshift({
-            date: this.newTxn.date || 'Mar 5, 2026',
-            description: this.newTxn.description,
-            category: this.newTxn.category,
-            wallet: this.newTxn.wallet,
+        if (!this.newTxn.walletId || !this.newTxn.amount) return;
+        if (this.newTxn.type === 'EXPENSE' && !this.newTxn.categoryId) return;
+
+        const payload = {
+            walletId: this.newTxn.walletId,
+            categoryId: this.newTxn.categoryId,
+            amount: this.newTxn.amount,
             type: this.newTxn.type,
-            amount: prefix + this.newTxn.amount
+            description: this.newTxn.description
+        };
+
+        this.transactionService.createTransaction(payload).subscribe({
+            next: () => {
+                this.currentPage = 0;
+                this.loadTransactions();
+                this.showModal = false;
+                this.newTxn = { type: 'EXPENSE', amount: null, categoryId: null, walletId: null, description: '' };
+                this.cdr.detectChanges();
+            },
+            error: () => {
+                alert('Failed to create transaction.');
+                this.cdr.detectChanges();
+            }
         });
-        this.showModal = false;
-        this.newTxn = { type: 'Expense', amount: '', category: '', wallet: 'Main Wallet', description: '', date: '' };
     }
 }

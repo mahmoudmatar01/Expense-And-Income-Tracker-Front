@@ -1,125 +1,101 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { delay, tap, catchError } from 'rxjs/operators';
+import { Observable, tap } from 'rxjs';
+import { TokenService } from './token.service';
+import { AuthResponse } from '../interfaces/AuthResponse';
+import { RegisterRequest } from '../interfaces/RegisterRequest';
+import { LoginRequest } from '../interfaces/LoginRequest';
+import { UserRole, User } from '../interfaces/user';
+import { environment } from '../interfaces/environment';
 
-export enum UserRole {
-    Admin = 'Admin',
-    Parent = 'Parent',
-    Child = 'Child'
-}
-
-export interface User {
-    id: string;
-    name: string;
-    email: string;
-    role: UserRole;
-    token: string;
-}
-
-export interface RegisterPayload {
-    name: string;
-    email: string;
-    password: string;
-    role: 'PARENT';
-}
-
-export interface AuthResponse {
-    user: User;
-    token: string;
-}
+// Re-export so other files can import from auth.service
+export { UserRole } from '../interfaces/user';
+export type { User } from '../interfaces/user';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AuthService {
-    private readonly API_URL = '/api/auth';
-    private currentUserSubject: BehaviorSubject<User | null>;
-    public currentUser$: Observable<User | null>;
 
-    constructor(private http: HttpClient) {
-        const storedUser = localStorage.getItem('currentUser');
-        this.currentUserSubject = new BehaviorSubject<User | null>(
-            storedUser ? JSON.parse(storedUser) : null
-        );
-        this.currentUser$ = this.currentUserSubject.asObservable();
+  private readonly API = `${environment.apiBaseUrl}/auth`;
+
+  constructor(
+    private http: HttpClient,
+    private tokenService: TokenService
+  ) { }
+
+
+  register(data: RegisterRequest): Observable<string> {
+    return this.http.post(`${this.API}/register`, data, { responseType: 'text' });
+  }
+
+  login(email: string, password: string): Observable<AuthResponse> {
+    const body: LoginRequest = { email, password };
+    return this.http.post<AuthResponse>(`${this.API}/login`, body)
+      .pipe(
+        tap(res => {
+          if (res.success && res.data) {
+            this.tokenService.saveTokens(
+              res.data.accessToken,
+              res.data.refreshToken
+            );
+            this.tokenService.saveRole(res.data.role);
+          }
+        })
+      );
+  }
+
+  refreshToken(): Observable<AuthResponse> {
+    const refreshToken = this.tokenService.getRefreshToken();
+    return this.http.post<AuthResponse>(`${this.API}/refresh`, { refreshToken })
+      .pipe(
+        tap(res => {
+          if (res.success && res.data) {
+            this.tokenService.saveTokens(
+              res.data.accessToken,
+              res.data.refreshToken
+            );
+            this.tokenService.saveRole(res.data.role);
+          }
+        })
+      );
+  }
+
+  logout(): void {
+    // Fire-and-forget the server logout, then clear local state
+    this.http.post(`${this.API}/logout`, {}, { responseType: 'text' }).subscribe({
+      error: () => { }
+    });
+    this.clearSession();
+  }
+
+  clearSession(): void {
+    this.tokenService.clearTokens();
+  }
+
+  get currentUserValue(): User | null {
+    const role = this.tokenService.getRole() as UserRole;
+    const token = this.tokenService.getAccessToken();
+
+    if (!role || !token) return null;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return {
+        name: payload.name || payload.fullName || payload.sub || '',
+        email: payload.sub || payload.email || '',
+        role
+      };
+    } catch {
+      return { name: '', email: role, role };
     }
+  }
 
-    public get currentUserValue(): User | null {
-        return this.currentUserSubject.value;
-    }
+  hasRole(role: UserRole): boolean {
+    return this.tokenService.getRole() === role;
+  }
 
-    /**
-     * Login — currently mocked, ready for backend integration.
-     * Will POST to /api/auth/login when backend is available.
-     */
-    login(email: string, role: UserRole): User {
-        const mockToken = btoa(
-            JSON.stringify({ sub: email, role, exp: Math.floor(Date.now() / 1000) + 3600 })
-        );
-        const user: User = {
-            id: Math.random().toString(36).substring(2, 9),
-            name: email.split('@')[0],
-            email,
-            role,
-            token: mockToken
-        };
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        this.currentUserSubject.next(user);
-        return user;
-    }
-
-    /**
-     * Register — mock implementation that simulates API call.
-     * Ready to swap for real HTTP POST to /api/auth/register.
-     */
-    register(payload: RegisterPayload): Observable<AuthResponse> {
-        // ── When backend is ready, replace with: ──
-        // return this.http.post<AuthResponse>(`${this.API_URL}/register`, payload).pipe(
-        //   tap(res => {
-        //     localStorage.setItem('currentUser', JSON.stringify(res.user));
-        //     this.currentUserSubject.next(res.user);
-        //   })
-        // );
-
-        // ── Mock implementation ──
-        // Simulate duplicate email check
-        const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]') as any[];
-        if (existingUsers.some((u: any) => u.email === payload.email)) {
-            return throwError(() => ({
-                status: 409,
-                error: { message: 'An account with this email already exists.' }
-            })).pipe(delay(800));
-        }
-
-        const mockToken = btoa(
-            JSON.stringify({ sub: payload.email, role: payload.role, exp: Math.floor(Date.now() / 1000) + 3600 })
-        );
-
-        const newUser: User = {
-            id: Math.random().toString(36).substring(2, 9),
-            name: payload.name,
-            email: payload.email,
-            role: UserRole.Parent,
-            token: mockToken
-        };
-
-        // Persist to local mock "database"
-        existingUsers.push({ name: payload.name, email: payload.email, role: payload.role });
-        localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
-
-        const response: AuthResponse = { user: newUser, token: mockToken };
-
-        return of(response).pipe(delay(1200)); // Simulate network latency
-    }
-
-    logout(): void {
-        localStorage.removeItem('currentUser');
-        this.currentUserSubject.next(null);
-    }
-
-    hasRole(role: string): boolean {
-        const user = this.currentUserValue;
-        return !!user && user.role === role;
-    }
+  get isAuthenticated(): boolean {
+    return this.tokenService.isLoggedIn();
+  }
 }

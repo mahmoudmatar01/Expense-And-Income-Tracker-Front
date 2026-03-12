@@ -1,6 +1,5 @@
 <div class="auth-container">
     <div class="auth-card">
-        <!-- Logo & Header -->
         <div class="auth-header">
             <div class="logo">
                 <span class="material-icons logo-icon">monetization_on</span>
@@ -9,13 +8,11 @@
             <p class="subtitle">Create your parent account</p>
         </div>
 
-        <!-- Success Alert -->
         <div class="alert alert-success" *ngIf="successMessage">
             <span class="material-icons alert-icon">check_circle</span>
             <span>{{ successMessage }}</span>
         </div>
 
-        <!-- Error Alert -->
         <div class="alert alert-error" *ngIf="errorMessage">
             <span class="material-icons alert-icon">error</span>
             <span>{{ errorMessage }}</span>
@@ -27,14 +24,22 @@
             <!-- Full Name -->
             <div class="form-group">
                 <label class="form-label" for="register-name">Full Name</label>
-                <div class="input-wrapper" [class.error]="f['name'].touched && f['name'].invalid">
+
+                <div class="input-wrapper" [class.error]="f['fullName'].touched && f['fullName'].invalid">
                     <span class="material-icons input-icon">person</span>
-                    <input id="register-name" type="text" class="form-control has-icon" formControlName="name"
+
+                    <input id="register-name" type="text" class="form-control has-icon" formControlName="fullName"
                         placeholder="John Doe" autocomplete="name" />
                 </div>
-                <div class="field-error" *ngIf="f['name'].touched && f['name'].errors">
-                    <span *ngIf="f['name'].hasError('required')">Full name is required.</span>
-                    <span *ngIf="f['name'].hasError('minlength')">Name must be at least 2 characters.</span>
+
+                <div class="field-error" *ngIf="f['fullName'].touched && f['fullName'].errors">
+                    <span *ngIf="f['fullName'].hasError('required')">
+                        Full name is required.
+                    </span>
+
+                    <span *ngIf="f['fullName'].hasError('minlength')">
+                        Name must be at least 2 characters.
+                    </span>
                 </div>
             </div>
 
@@ -118,7 +123,8 @@
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary btn-block" [disabled]="isLoading" [class.loading]="isLoading">
+            <button type="submit" class="btn btn-primary btn-block" [disabled]="isLoading || registerForm.invalid"
+                [class.loading]="isLoading">
                 <span class="btn-content" *ngIf="!isLoading">
                     <span class="material-icons" style="font-size: 18px;">person_add</span>
                     Create Account

@@ -8,6 +8,11 @@
             <p class="subtitle">Sign in to your account</p>
         </div>
 
+        <div class="alert alert-error" *ngIf="errorMessage">
+            <span class="material-icons alert-icon">error</span>
+            <span>{{ errorMessage }}</span>
+        </div>
+
         <form (ngSubmit)="login()" class="auth-form">
             <div class="form-group">
                 <label class="form-label">Email Address</label>
@@ -21,16 +26,14 @@
                     placeholder="••••••••">
             </div>
 
-            <div class="form-group">
-                <label class="form-label">Mock Role (For testing)</label>
-                <select class="form-control" [(ngModel)]="selectedRole" name="role">
-                    <option [value]="UserRole.Admin">Admin</option>
-                    <option [value]="UserRole.Parent">Parent</option>
-                    <option [value]="UserRole.Child">Child</option>
-                </select>
-            </div>
-
-            <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+            <button type="submit" class="btn btn-primary btn-block" [disabled]="isLoading || !email || !password"
+                [class.loading]="isLoading">
+                <span class="btn-content" *ngIf="!isLoading">Sign in</span>
+                <span class="btn-content" *ngIf="isLoading">
+                    <span class="spinner"></span>
+                    Signing in...
+                </span>
+            </button>
         </form>
 
         <div class="auth-footer">

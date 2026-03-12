@@ -1,34 +1,36 @@
 <app-page-header title="My Dashboard" subtitle="Your spending at a glance"></app-page-header>
 
 <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
-    <app-stat-card label="Wallet Balance" value="$150.00" icon="account_balance_wallet" iconColor="#635BFF"
-        iconBg="rgba(99,91,255,0.1)" [gradient]="true"></app-stat-card>
-    <app-stat-card label="Allowance Received" value="$100.00" icon="monetization_on" iconColor="#2ECC71"
-        iconBg="rgba(46,204,113,0.1)" change="This month"></app-stat-card>
-    <app-stat-card label="Total Spent" value="$31.50" icon="trending_down" iconColor="#E74C3C"
-        iconBg="rgba(231,76,60,0.1)"></app-stat-card>
-    <app-stat-card label="Remaining" value="$68.50" icon="savings" iconColor="#F39C12"
-        iconBg="rgba(243,156,18,0.1)"></app-stat-card>
+    <app-stat-card label="Wallet Balance" [value]="'$' + (overview.walletBalance | number:'1.2-2')"
+        icon="account_balance_wallet" iconColor="#635BFF" iconBg="rgba(99,91,255,0.1)"
+        [gradient]="true"></app-stat-card>
+    <app-stat-card label="Spending Limit" [value]="'$' + (overview.spendingLimit | number:'1.2-2')"
+        icon="monetization_on" iconColor="#2ECC71" iconBg="rgba(46,204,113,0.1)"></app-stat-card>
+    <app-stat-card label="Total Spent" [value]="'$' + (overview.totalSpent | number:'1.2-2')" icon="trending_down"
+        iconColor="#E74C3C" iconBg="rgba(231,76,60,0.1)"></app-stat-card>
+    <app-stat-card label="Remaining Limit" [value]="'$' + (overview.remainingLimit | number:'1.2-2')" icon="savings"
+        iconColor="#F39C12" iconBg="rgba(243,156,18,0.1)"></app-stat-card>
 </div>
 
 <div class="charts-row">
     <div class="chart-card">
         <h3>Spending by Category</h3>
-        <div class="chart-container" style="height: 240px;">
-            <canvas baseChart [data]="categorySpending" [options]="pieOptions" type="doughnut"></canvas>
-        </div>
-    </div>
-    <div class="chart-card">
-        <h3>Weekly Spending</h3>
-        <div class="chart-container" style="height: 240px;">
-            <canvas baseChart [data]="weeklySpending" [options]="chartOptions" type="bar"></canvas>
-        </div>
+        <ng-container *ngIf="categorySpending && categorySpending.labels && categorySpending.labels.length > 0; else noCategoryData">
+            <div class="chart-container" style="height: 240px;">
+                <canvas baseChart [data]="categorySpending" [options]="pieOptions" type="doughnut"></canvas>
+            </div>
+        </ng-container>
+        <ng-template #noCategoryData>
+            <div class="empty-state" style="height: 240px; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted);">
+                No spending data available yet.
+            </div>
+        </ng-template>
     </div>
 </div>
 
 <div class="chart-card" style="margin-top: 1.25rem;">
     <h3 style="margin-bottom: 1rem;">Recent Transactions</h3>
-    <div class="recent-list">
+    <div class="recent-list" *ngIf="transactions.length > 0; else noTxns">
         <div class="txn-item" *ngFor="let txn of transactions">
             <div class="txn-left">
                 <div class="txn-icon" [class.income]="txn.amount > 0">
@@ -36,7 +38,7 @@
                 </div>
                 <div class="txn-details">
                     <span class="txn-desc">{{ txn.description }}</span>
-                    <span class="txn-meta">{{ txn.category }} · {{ txn.date }}</span>
+                    <span class="txn-meta">{{ txn.category || 'N/A' }} · {{ txn.date }}</span>
                 </div>
             </div>
             <span class="txn-amount" [class.income]="txn.amount > 0" [class.expense]="txn.amount < 0">
@@ -44,4 +46,9 @@
                     </span>
         </div>
     </div>
+    <ng-template #noTxns>
+        <div class="empty-state" style="padding: 2rem; text-align: center; color: var(--color-text-muted);">
+            No transactions recorded yet.
+        </div>
+    </ng-template>
 </div>
