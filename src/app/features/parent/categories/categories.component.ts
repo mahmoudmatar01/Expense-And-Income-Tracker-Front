@@ -5,17 +5,20 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { ModalComponent } from '../../../shared/components/modal/modal.component';
 import { CategoryService } from '../../../core/services/category.service';
 import { BudgetService } from '../../../core/services/budget.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-parent-categories',
     standalone: true,
-    imports: [CommonModule, FormsModule, PageHeaderComponent, ModalComponent],
+    imports: [CommonModule, FormsModule, PageHeaderComponent, ModalComponent, EmptyStateComponent],
     templateUrl: './categories.component.html',
     styleUrls: ['../../../shared/styles/pages.css']
 })
 export class ParentCategoriesComponent implements OnInit {
     private categoryService = inject(CategoryService);
     private budgetService = inject(BudgetService);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     isLoading = true;
@@ -49,7 +52,7 @@ export class ParentCategoriesComponent implements OnInit {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.errorMessage = 'Failed to load categories.';
+                this.toastService.error('Failed to load categories.');
                 this.isLoading = false;
                 this.cdr.detectChanges();
             }
@@ -74,18 +77,20 @@ export class ParentCategoriesComponent implements OnInit {
         if (this.editingCat) {
             this.categoryService.updateCategory(this.editingCat.id, this.newCat.name, this.newCat.budget).subscribe({
                 next: () => {
+                    this.toastService.success('Category updated successfully.');
                     this.loadCategories();
                     this.showModal = false;
                     this.cdr.detectChanges();
                 },
                 error: () => {
-                    alert('Failed to update category.');
+                    this.toastService.error('Failed to update category.');
                     this.cdr.detectChanges();
                 }
             });
         } else {
             this.categoryService.createCategory(this.newCat.name).subscribe({
                 next: (res) => {
+                    this.toastService.success('Category created successfully.');
                     if (res.success && this.newCat.budget > 0) {
                         this.budgetService.createBudget(res.data.id, this.newCat.budget).subscribe({
                             next: () => {
@@ -104,8 +109,8 @@ export class ParentCategoriesComponent implements OnInit {
                     this.showModal = false;
                     this.cdr.detectChanges();
                 },
-                error: () => {
-                    alert('Failed to create category.');
+                error: (err) => {
+                    this.toastService.error(err?.error?.message || 'Failed to create category.');
                     this.cdr.detectChanges();
                 }
             });
@@ -116,11 +121,12 @@ export class ParentCategoriesComponent implements OnInit {
         if (confirm(`Delete category ${cat.name}?`)) {
             this.categoryService.deleteCategory(cat.id).subscribe({
                 next: () => {
+                    this.toastService.success('Category deleted successfully.');
                     this.loadCategories();
                     this.cdr.detectChanges();
                 },
-                error: () => {
-                    alert('Failed to delete category.');
+                error: (err) => {
+                    this.toastService.error(err?.error?.message || 'Failed to delete category.');
                     this.cdr.detectChanges();
                 }
             });

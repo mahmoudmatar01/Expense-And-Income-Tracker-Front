@@ -11,6 +11,7 @@ import {
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { RegisterRequest } from '../../../core/interfaces/RegisterRequest';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-register',
@@ -23,11 +24,10 @@ export class RegisterComponent {
     private fb = inject(FormBuilder);
     private authService = inject(AuthService);
     private router = inject(Router);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     isLoading = false;
-    errorMessage = '';
-    successMessage = '';
 
     showPassword = false;
     showConfirmPassword = false;
@@ -87,8 +87,6 @@ export class RegisterComponent {
         if (this.registerForm.invalid) return;
 
         this.isLoading = true;
-        this.errorMessage = '';
-        this.successMessage = '';
 
         const payload: RegisterRequest = {
             fullName: this.registerForm.value.fullName.trim(),
@@ -100,16 +98,15 @@ export class RegisterComponent {
         this.authService.register(payload).subscribe({
             next: () => {
                 this.isLoading = false;
-                this.successMessage =
-                    'Account created successfully! Redirecting to login...';
+                this.toastService.success('Account created successfully! Redirecting to login...');
                 setTimeout(() => this.router.navigate(['/login']), 1500);
             },
             error: (err) => {
                 this.isLoading = false;
                 if (err.status === 400 || err.status === 422) {
-                    this.errorMessage = 'Registration failed. Please check your information and try again.';
+                    this.toastService.error('Registration failed. Please check your information and try again.');
                 } else {
-                    this.errorMessage = err?.error?.message || 'Something went wrong. Please try again later.';
+                    this.toastService.error(err?.error?.message || 'Something went wrong. Please try again later.');
                 }
                 this.cdr.detectChanges();
             },

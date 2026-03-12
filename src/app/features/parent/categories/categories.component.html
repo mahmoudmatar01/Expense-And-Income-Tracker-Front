@@ -4,7 +4,7 @@
     </button>
 </app-page-header>
 
-<div class="cards-grid">
+<div class="cards-grid" *ngIf="!isLoading && categories.length > 0">
     <div class="item-card" *ngFor="let cat of categories">
         <div class="item-card-header">
             <div class="item-card-icon" [style.background]="cat.color + '18'" [style.color]="cat.color">
@@ -27,6 +27,17 @@
         </div>
     </div>
 </div>
+
+<div class="center-content" *ngIf="isLoading" style="padding: 3rem; text-align: center;">
+    <div class="loader" style="margin: 0 auto; border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--color-primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;"></div>
+    <p style="color: var(--color-text-muted); margin-top: 0.5rem;">Loading categories...</p>
+</div>
+
+<app-empty-state *ngIf="!isLoading && categories.length === 0" 
+    icon="category" 
+    title="No categories yet" 
+    message="Create your first category to organize your spending.">
+</app-empty-state>
 
 <app-modal [isOpen]="showModal" [title]="editingCat ? 'Edit Category' : 'Add Category'" (close)="showModal = false">
     <div class="form-group">

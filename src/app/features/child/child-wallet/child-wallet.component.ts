@@ -4,6 +4,7 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { StatCardComponent } from '../../../shared/components/stat-card/stat-card.component';
 import { WalletService } from '../../../core/services/wallet.service';
 import { TransactionService } from '../../../core/services/transaction.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-child-wallet',
@@ -15,10 +16,11 @@ import { TransactionService } from '../../../core/services/transaction.service';
 export class ChildWalletComponent implements OnInit {
     private walletService = inject(WalletService);
     private transactionService = inject(TransactionService);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     isLoading = true;
-    errorMessage = '';
+    hasWallet = false;
 
     balance = 0.00;
     currency = 'USD';
@@ -33,14 +35,22 @@ export class ChildWalletComponent implements OnInit {
         this.walletService.getChildWallet().subscribe({
             next: (res) => {
                 if (res.success && res.data && res.data.length > 0) {
-                    this.balance = res.data.reduce((sum, w) => sum + w.balance, 0);
+                    this.hasWallet = true;
+                    this.balance = res.data.reduce((sum: number, w: any) => sum + w.balance, 0);
                     this.currency = res.data[0].currency;
+                } else {
+                    this.hasWallet = false;
                 }
                 this.isLoading = false;
                 this.cdr.detectChanges();
             },
-            error: () => {
-                this.errorMessage = 'Failed to load wallet.';
+            error: (err) => {
+                if (err.status === 404) {
+                    this.hasWallet = false;
+                } else {
+                    this.toastService.error('Failed to load wallet information. Please try again later.');
+                    this.hasWallet = false;
+                }
                 this.isLoading = false;
                 this.cdr.detectChanges();
             }
@@ -60,7 +70,7 @@ export class ChildWalletComponent implements OnInit {
                 }));
                 this.cdr.detectChanges();
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });

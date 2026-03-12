@@ -1,14 +1,6 @@
 <app-page-header title="My Profile" subtitle="View and manage your account"></app-page-header>
 
-<div class="alert alert-error" *ngIf="errorMessage">
-    <span class="material-icons alert-icon">error</span>
-    <span>{{ errorMessage }}</span>
-</div>
 
-<div class="alert alert-success" *ngIf="successMessage">
-    <span class="material-icons alert-icon">check_circle</span>
-    <span>{{ successMessage }}</span>
-</div>
 
 <div *ngIf="isLoading" style="text-align: center; padding: 3rem;">
     <span class="spinner"></span>

@@ -5,7 +5,7 @@
     </button>
 </app-page-header>
 
-<div class="cards-grid">
+<div class="cards-grid" *ngIf="!isLoading && wallets.length > 0">
     <div class="item-card" *ngFor="let wallet of wallets">
         <div class="item-card-header">
             <div class="item-card-icon" [style.background]="wallet.color + '18'" [style.color]="wallet.color">
@@ -28,6 +28,17 @@
     </div>
 </div>
 
+<div class="center-content" *ngIf="isLoading" style="padding: 3rem; text-align: center;">
+    <div class="loader" style="margin: 0 auto; border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--color-primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;"></div>
+    <p style="color: var(--color-text-muted); margin-top: 0.5rem;">Loading wallets...</p>
+</div>
+
+<app-empty-state *ngIf="!isLoading && wallets.length === 0" 
+    icon="account_balance_wallet" 
+    title="No wallets yet" 
+    message="Create your first wallet to start tracking balances.">
+</app-empty-state>
+
 <app-modal [isOpen]="showModal" [title]="editingWallet ? 'Edit Wallet' : 'Add Wallet'" (close)="showModal = false">
     <div class="form-group">
         <label class="form-label">Wallet Name</label>
@@ -39,7 +50,6 @@
             <select class="form-control" [(ngModel)]="newWallet.currency">
                 <option value="USD">USD</option>
                 <option value="EUR">EUR</option>
-                <option value="GBP">GBP</option>
             </select>
         </div>
         <div class="form-group" *ngIf="!editingWallet">

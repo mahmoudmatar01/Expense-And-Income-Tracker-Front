@@ -5,6 +5,7 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { DataTableComponent, TableColumn } from '../../../shared/components/data-table/data-table.component';
 import { ModalComponent } from '../../../shared/components/modal/modal.component';
 import { ChildAccountService } from '../../../core/services/child-account.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-parent-children',
@@ -15,6 +16,7 @@ import { ChildAccountService } from '../../../core/services/child-account.servic
 })
 export class ParentChildrenComponent implements OnInit {
     private childService = inject(ChildAccountService);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     isLoading = true;
@@ -51,7 +53,7 @@ export class ParentChildrenComponent implements OnInit {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.errorMessage = 'Failed to load children.';
+                this.toastService.error('Failed to load child accounts.');
                 this.isLoading = false;
                 this.cdr.detectChanges();
             }
@@ -78,12 +80,14 @@ export class ParentChildrenComponent implements OnInit {
 
         this.childService.createChild(payload).subscribe({
             next: () => {
+                this.toastService.success('Child account created successfully.');
                 this.loadChildren();
                 this.showModal = false;
                 this.cdr.detectChanges();
             },
-            error: () => {
-                alert('Failed to create child account.');
+            error: (err) => {
+                const msg = err.error?.message || 'Failed to create child account.';
+                this.toastService.error(msg);
                 this.cdr.detectChanges();
             }
         });
@@ -92,11 +96,12 @@ export class ParentChildrenComponent implements OnInit {
     deactivateChild(child: any) {
         this.childService.updateChildStatus(child.id).subscribe({
             next: () => {
+                this.toastService.success('Child status updated successfully.');
                 this.loadChildren();
                 this.cdr.detectChanges();
             },
             error: () => {
-                alert('Failed to change child status.');
+                this.toastService.error('Failed to change child status.');
                 this.cdr.detectChanges();
             }
         });

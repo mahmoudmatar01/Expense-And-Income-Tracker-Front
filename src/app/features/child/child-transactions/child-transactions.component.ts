@@ -7,6 +7,7 @@ import { ModalComponent } from '../../../shared/components/modal/modal.component
 import { TransactionService } from '../../../core/services/transaction.service';
 import { CategoryService } from '../../../core/services/category.service';
 import { WalletService } from '../../../core/services/wallet.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-child-transactions',
@@ -26,12 +27,11 @@ export class ChildTransactionsComponent implements OnInit {
     private transactionService = inject(TransactionService);
     private categoryService = inject(CategoryService);
     private walletService = inject(WalletService);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
     private fb = inject(FormBuilder);
 
     isLoading = true;
-    errorMessage = '';
-    successMessage = '';
     showModal = false;
     txnForm!: FormGroup;
 
@@ -110,7 +110,7 @@ export class ChildTransactionsComponent implements OnInit {
             },
 
             error: () => {
-                this.errorMessage = 'Failed to load transactions.';
+                this.toastService.error('Failed to load transactions.');
                 this.isLoading = false;
                 this.cdr.detectChanges();
             }
@@ -181,18 +181,12 @@ export class ChildTransactionsComponent implements OnInit {
                     type: 'EXPENSE'
                 });
 
-                this.successMessage = 'Transaction recorded successfully!';
-
-                setTimeout(() => {
-                    this.successMessage = '';
-                    this.cdr.detectChanges();
-                }, 3000);
-
+                this.toastService.success('Transaction recorded successfully!');
                 this.cdr.detectChanges();
             },
 
             error: () => {
-                alert('Failed to save transaction.');
+                this.toastService.error('Failed to save transaction.');
                 this.cdr.detectChanges();
             }
         });

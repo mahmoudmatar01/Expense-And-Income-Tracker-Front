@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, ContentChild, TemplateRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { EmptyStateComponent } from '../empty-state/empty-state.component';
 
 export interface TableColumn {
     key: string;
@@ -12,7 +13,7 @@ export interface TableColumn {
 @Component({
     selector: 'app-data-table',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, EmptyStateComponent],
     template: `
     <div class="table-wrapper">
       <div class="table-toolbar" *ngIf="searchable || filterOptions.length">
@@ -61,9 +62,15 @@ export interface TableColumn {
                 <ng-container *ngTemplateOutlet="actionsTemplate; context: {$implicit: row, index: i}"></ng-container>
               </td>
             </tr>
-            <tr *ngIf="displayedData.length === 0">
-              <td [attr.colspan]="columns.length + (showActions ? 1 : 0)" class="empty-state">
-                No data found
+            <tr *ngIf="isLoading">
+              <td [attr.colspan]="columns.length + (showActions ? 1 : 0)" class="center-content">
+                <div class="loader"></div>
+                <p>Loading data...</p>
+              </td>
+            </tr>
+            <tr *ngIf="!isLoading && displayedData.length === 0">
+              <td [attr.colspan]="columns.length + (showActions ? 1 : 0)" class="center-content" style="padding:0">
+                <app-empty-state [icon]="emptyIcon" [title]="emptyTitle" [message]="emptyMessage"></app-empty-state>
               </td>
             </tr>
           </tbody>
@@ -177,11 +184,21 @@ export interface TableColumn {
     .amount.income { color: var(--color-success); }
     .amount.expense { color: var(--color-danger); }
     .actions-col { text-align: right; }
-    .empty-state {
+    .center-content {
       text-align: center;
       padding: 3rem !important;
       color: var(--color-text-muted);
     }
+    .loader {
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-top: 3px solid var(--color-primary, #635bff);
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 0.5rem auto;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .table-footer {
       display: flex;
       justify-content: space-between;
@@ -218,6 +235,10 @@ export class DataTableComponent {
     @Input() filterKey = '';
     @Input() showActions = false;
     @Input() pageSize = 8;
+    @Input() isLoading = false;
+    @Input() emptyIcon = 'inbox';
+    @Input() emptyTitle = 'No data found';
+    @Input() emptyMessage = 'There is nothing to display here right now.';
     @ContentChild('rowActions') actionsTemplate!: TemplateRef<any>;
 
     @Output() searchChange = new EventEmitter<string>();

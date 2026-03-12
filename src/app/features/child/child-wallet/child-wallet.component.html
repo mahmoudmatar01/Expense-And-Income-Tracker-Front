@@ -1,16 +1,19 @@
 <app-page-header title="My Wallet" subtitle="View your wallet balance and history"></app-page-header>
 
-<div class="alert alert-error" *ngIf="errorMessage">
-    <span class="material-icons alert-icon">error</span>
-    <span>{{ errorMessage }}</span>
+<!-- Empty State: No wallet assigned -->
+<div *ngIf="!isLoading && !hasWallet" class="empty-state-container">
+    <div class="empty-state-card">
+        <div class="empty-state-icon">
+            <span class="material-icons">account_balance_wallet</span>
+        </div>
+        <h3 class="empty-state-title">No Wallet Assigned</h3>
+        <p class="empty-state-message">
+            You don’t have a wallet assigned yet. Please ask your parent to assign a wallet to your account.
+        </p>
+    </div>
 </div>
 
-<div *ngIf="isLoading" style="text-align: center; padding: 3rem;">
-    <span class="spinner"></span>
-    <p style="margin-top: 1rem; color: var(--color-text-muted);">Loading wallet...</p>
-</div>
-
-<ng-container *ngIf="!isLoading && !errorMessage">
+<ng-container *ngIf="!isLoading && hasWallet">
     <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-bottom: 2rem;">
         <app-stat-card label="Current Balance" [value]="'$' + (balance | number:'1.2-2')" icon="account_balance_wallet"
             iconColor="#635BFF" iconBg="rgba(99,91,255,0.1)" [gradient]="true"></app-stat-card>

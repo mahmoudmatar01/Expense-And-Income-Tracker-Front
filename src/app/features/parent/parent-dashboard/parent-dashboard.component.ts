@@ -100,7 +100,7 @@ export class ParentDashboardComponent implements OnInit {
                     this.cdr.detectChanges();
                 }
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });
@@ -118,7 +118,7 @@ export class ParentDashboardComponent implements OnInit {
                 }));
                 this.cdr.detectChanges();
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });
@@ -138,7 +138,7 @@ export class ParentDashboardComponent implements OnInit {
                 }));
                 this.cdr.detectChanges();
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });

@@ -15,13 +15,15 @@
 <div class="charts-row">
     <div class="chart-card">
         <h3>Spending by Category</h3>
-        <ng-container *ngIf="categorySpending && categorySpending.labels && categorySpending.labels.length > 0; else noCategoryData">
+        <ng-container
+            *ngIf="categorySpending && categorySpending.labels && categorySpending.labels.length > 0; else noCategoryData">
             <div class="chart-container" style="height: 240px;">
                 <canvas baseChart [data]="categorySpending" [options]="pieOptions" type="doughnut"></canvas>
             </div>
         </ng-container>
         <ng-template #noCategoryData>
-            <div class="empty-state" style="height: 240px; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted);">
+            <div class="empty-state"
+                style="height: 240px; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted);">
                 No spending data available yet.
             </div>
         </ng-template>

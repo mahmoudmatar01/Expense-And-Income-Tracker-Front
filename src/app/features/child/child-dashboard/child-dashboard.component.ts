@@ -68,7 +68,7 @@ export class ChildDashboardComponent implements OnInit {
                 }));
                 this.cdr.detectChanges();
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });
@@ -87,7 +87,7 @@ export class ChildDashboardComponent implements OnInit {
                     this.cdr.detectChanges();
                 }
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });

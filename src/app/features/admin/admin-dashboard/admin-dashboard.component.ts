@@ -6,6 +6,7 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { StatCardComponent } from '../../../shared/components/stat-card/stat-card.component';
 import { AdminService } from '../../../core/services/admin.service';
 import { AdminDashboardOverview } from '../../../core/interfaces/admin';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-admin-dashboard',
@@ -16,6 +17,7 @@ import { AdminDashboardOverview } from '../../../core/interfaces/admin';
 })
 export class AdminDashboardComponent implements OnInit {
     private adminService = inject(AdminService);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     isLoading = true;
@@ -58,6 +60,7 @@ export class AdminDashboardComponent implements OnInit {
             },
             error: (err) => {
                 this.errorMessage = 'Failed to load dashboard data.';
+                this.toastService.error('Failed to load dashboard data.');
                 this.isLoading = false;
                 this.cdr.detectChanges();
             }
@@ -75,7 +78,7 @@ export class AdminDashboardComponent implements OnInit {
                     this.cdr.detectChanges();
                 }
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });
@@ -92,7 +95,7 @@ export class AdminDashboardComponent implements OnInit {
                 }));
                 this.cdr.detectChanges();
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });
@@ -114,7 +117,7 @@ export class AdminDashboardComponent implements OnInit {
                     this.cdr.detectChanges();
                 }
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });
@@ -136,7 +139,7 @@ export class AdminDashboardComponent implements OnInit {
                     this.cdr.detectChanges();
                 }
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });

@@ -32,7 +32,7 @@
     <p><strong>{{ b.category }}</strong> budget is almost exhausted! ${{ b.spent }} / ${{ b.limit }} spent.</p>
 </div>
 
-<div class="cards-grid">
+<div class="cards-grid" *ngIf="!isLoading && budgets.length > 0">
     <div class="item-card" *ngFor="let budget of budgets">
         <div class="item-card-header">
             <div class="item-card-icon" [style.background]="budget.color + '18'" [style.color]="budget.color">
@@ -55,6 +55,17 @@
         </div>
     </div>
 </div>
+
+<div class="center-content" *ngIf="isLoading" style="padding: 3rem; text-align: center;">
+    <div class="loader" style="margin: 0 auto; border: 3px solid rgba(0,0,0,0.1); border-top: 3px solid var(--color-primary); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;"></div>
+    <p style="color: var(--color-text-muted); margin-top: 0.5rem;">Loading budgets...</p>
+</div>
+
+<app-empty-state *ngIf="!isLoading && budgets.length === 0" 
+    icon="savings" 
+    title="No budgets set" 
+    message="Create your first budget to start monitoring your category spending.">
+</app-empty-state>
 
 <app-modal [isOpen]="showModal" title="Set Budget" (close)="showModal = false">
     <div class="form-group">

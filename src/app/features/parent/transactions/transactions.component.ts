@@ -7,6 +7,7 @@ import { ModalComponent } from '../../../shared/components/modal/modal.component
 import { TransactionService } from '../../../core/services/transaction.service';
 import { WalletService } from '../../../core/services/wallet.service';
 import { CategoryService } from '../../../core/services/category.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-parent-transactions',
@@ -19,6 +20,7 @@ export class ParentTransactionsComponent implements OnInit {
     private transactionService = inject(TransactionService);
     private walletService = inject(WalletService);
     private categoryService = inject(CategoryService);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     isLoading = true;
@@ -72,7 +74,7 @@ export class ParentTransactionsComponent implements OnInit {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.errorMessage = 'Failed to load transactions.';
+                this.toastService.error('Failed to load transactions.');
                 this.isLoading = false;
                 this.cdr.detectChanges();
             }
@@ -131,6 +133,7 @@ export class ParentTransactionsComponent implements OnInit {
 
         this.transactionService.createTransaction(payload).subscribe({
             next: () => {
+                this.toastService.success('Transaction created successfully.');
                 this.currentPage = 0;
                 this.loadTransactions();
                 this.showModal = false;
@@ -138,7 +141,7 @@ export class ParentTransactionsComponent implements OnInit {
                 this.cdr.detectChanges();
             },
             error: () => {
-                alert('Failed to create transaction.');
+                this.toastService.error('Failed to create transaction. Please try again.');
                 this.cdr.detectChanges();
             }
         });

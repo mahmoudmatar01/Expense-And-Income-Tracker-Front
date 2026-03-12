@@ -8,15 +8,7 @@
             <p class="subtitle">Create your parent account</p>
         </div>
 
-        <div class="alert alert-success" *ngIf="successMessage">
-            <span class="material-icons alert-icon">check_circle</span>
-            <span>{{ successMessage }}</span>
-        </div>
 
-        <div class="alert alert-error" *ngIf="errorMessage">
-            <span class="material-icons alert-icon">error</span>
-            <span>{{ errorMessage }}</span>
-        </div>
 
         <!-- Registration Form -->
         <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form" autocomplete="off">
@@ -73,6 +65,7 @@
                     <span *ngIf="f['password'].hasError('required')">Password is required.</span>
                     <span *ngIf="f['password'].hasError('minlength')">Password must be at least 8 characters.</span>
                 </div>
+
                 <!-- Password Strength -->
                 <div class="password-strength" *ngIf="f['password'].value">
                     <div class="strength-track">

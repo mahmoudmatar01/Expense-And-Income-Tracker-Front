@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService, UserRole } from '../../../core/services/auth.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-login',
@@ -14,6 +15,7 @@ import { AuthService, UserRole } from '../../../core/services/auth.service';
 export class LoginComponent {
     private authService = inject(AuthService);
     private router = inject(Router);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     email = '';
@@ -31,7 +33,7 @@ export class LoginComponent {
             next: (res) => {
                 this.isLoading = false;
                 const user = this.authService.currentUserValue;
-
+                this.toastService.success('Login successful!');
                 if (user?.role === UserRole.Admin) {
                     this.router.navigate(['/admin/dashboard']);
                 } else if (user?.role === UserRole.Parent) {
@@ -42,10 +44,10 @@ export class LoginComponent {
             },
             error: (err) => {
                 this.isLoading = false;
-                if (err.status === 401 || err.status === 403 || (err.error && err.error.message?.includes('Bad credentials'))) {
-                    this.errorMessage = 'Incorrect email or password. Please try again.';
+                if (err.status === 400 || err.status === 401 || err.status === 403 || err.status === 404) {
+                    this.toastService.error('Incorrect email or password. Please try again.');
                 } else {
-                    this.errorMessage = err?.error?.message || 'Something went wrong. Please try again later.';
+                    this.toastService.error(err?.error?.message || 'Something went wrong. Please try again later.');
                 }
                 this.cdr.detectChanges();
             }

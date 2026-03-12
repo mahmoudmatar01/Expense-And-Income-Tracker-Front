@@ -5,7 +5,7 @@
 </app-page-header>
 
 <app-data-table [columns]="columns" [data]="children" [searchable]="true" searchPlaceholder="Search children..."
-    [showActions]="true">
+    [showActions]="true" [isLoading]="isLoading" emptyIcon="group" emptyTitle="No children found" emptyMessage="Add a child account to manage their expenses.">
     <ng-template #rowActions let-row>
         <div style="display: flex; gap: 0.25rem; justify-content: flex-end;">
             <button class="icon-btn" (click)="deactivateChild(row)"

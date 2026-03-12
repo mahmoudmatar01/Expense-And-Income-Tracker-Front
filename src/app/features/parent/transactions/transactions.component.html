@@ -1,7 +1,9 @@
 <app-page-header title="Transactions" subtitle="Track all your income and expenses"></app-page-header>
 
 <app-data-table [columns]="columns" [data]="transactions" [searchable]="true" searchPlaceholder="Search transactions..."
-    [filterOptions]="['INCOME', 'EXPENSE']" filterLabel="All Types" filterKey="type" [showActions]="false">
+    [filterOptions]="['INCOME', 'EXPENSE']" filterLabel="All Types" filterKey="type" [showActions]="false"
+    [isLoading]="isLoading" emptyIcon="receipt_long" emptyTitle="No transactions yet"
+    emptyMessage="Start by adding your first transaction.">
 </app-data-table>
 
 <!-- Pagination Control -->

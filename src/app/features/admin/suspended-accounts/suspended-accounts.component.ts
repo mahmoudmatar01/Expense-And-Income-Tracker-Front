@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { DataTableComponent, TableColumn } from '../../../shared/components/data-table/data-table.component';
 import { AdminService } from '../../../core/services/admin.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-suspended-accounts',
@@ -13,6 +14,7 @@ import { AdminService } from '../../../core/services/admin.service';
 })
 export class SuspendedAccountsComponent implements OnInit {
     private adminService = inject(AdminService);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     isLoading = true;
@@ -53,6 +55,7 @@ export class SuspendedAccountsComponent implements OnInit {
             error: () => {
                 this.errorMessage = 'Failed to load suspended users.';
                 this.isLoading = false;
+                this.toastService.error('Failed to load suspended users.');
                 this.cdr.detectChanges();
             }
         });
@@ -76,10 +79,11 @@ export class SuspendedAccountsComponent implements OnInit {
         this.adminService.changeUserStatus(user.id).subscribe({
             next: () => {
                 this.loadSuspendedUsers();
+                this.toastService.success('User reactivated successfully.');
                 this.cdr.detectChanges();
             },
             error: () => {
-                alert('Failed to reactivate user.');
+                this.toastService.error('Failed to reactivate user.');
                 this.cdr.detectChanges();
             }
         });

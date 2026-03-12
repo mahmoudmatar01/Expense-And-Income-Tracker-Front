@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { DataTableComponent, TableColumn } from '../../../shared/components/data-table/data-table.component';
 import { AdminService } from '../../../core/services/admin.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-admin-transactions',
@@ -14,6 +15,7 @@ import { AdminService } from '../../../core/services/admin.service';
 })
 export class AdminTransactionsComponent implements OnInit {
     private adminService = inject(AdminService);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     isLoading = true;
@@ -59,6 +61,7 @@ export class AdminTransactionsComponent implements OnInit {
             },
             error: () => {
                 this.errorMessage = 'Failed to load transactions.';
+                this.toastService.error('Failed to load transactions.');
                 this.isLoading = false;
                 this.cdr.detectChanges();
             }

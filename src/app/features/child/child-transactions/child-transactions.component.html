@@ -1,14 +1,10 @@
 <app-page-header title="My Transactions" subtitle="View your spending history"></app-page-header>
 
 <app-data-table [columns]="columns" [data]="transactions" [searchable]="true"
-    searchPlaceholder="Search transactions...">
+    searchPlaceholder="Search transactions..."
+    [isLoading]="isLoading" emptyIcon="receipt_long" emptyTitle="No transactions yet"
+    emptyMessage="You haven't made any transactions.">
 </app-data-table>
-
-<div class="alert alert-success" *ngIf="successMessage"
-    style="margin-bottom: 1rem; margin-top: 1rem; display: flex; align-items: center; gap: 0.5rem; background: rgba(46, 204, 113, 0.1); color: var(--color-success); padding: 0.75rem 1rem; border-radius: 8px;">
-    <span class="material-icons alert-icon" style="font-size: 1.2rem;">check_circle</span>
-    <span style="font-weight: 500;">{{ successMessage }}</span>
-</div>
 
 <!-- Pagination Control -->
 <div

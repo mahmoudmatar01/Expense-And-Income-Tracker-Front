@@ -5,6 +5,7 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { DataTableComponent, TableColumn } from '../../../shared/components/data-table/data-table.component';
 import { ModalComponent } from '../../../shared/components/modal/modal.component';
 import { AdminService } from '../../../core/services/admin.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-users-management',
@@ -15,6 +16,7 @@ import { AdminService } from '../../../core/services/admin.service';
 })
 export class UsersManagementComponent implements OnInit {
     private adminService = inject(AdminService);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     isLoading = true;
@@ -61,6 +63,7 @@ export class UsersManagementComponent implements OnInit {
             },
             error: (err) => {
                 this.errorMessage = 'Failed to load users.';
+                this.toastService.error('Failed to load users.');
                 this.isLoading = false;
                 this.cdr.detectChanges();
             }
@@ -90,10 +93,11 @@ export class UsersManagementComponent implements OnInit {
         this.adminService.changeUserStatus(user.id).subscribe({
             next: () => {
                 this.loadUsers();
+                this.toastService.success('User status changed successfully.');
                 this.cdr.detectChanges();
             },
             error: () => {
-                alert('Failed to change user status.');
+                this.toastService.error('Failed to change user status.');
                 this.cdr.detectChanges();
             }
         });
@@ -103,10 +107,11 @@ export class UsersManagementComponent implements OnInit {
         this.adminService.changeUserStatus(user.id).subscribe({
             next: () => {
                 this.loadUsers();
+                this.toastService.success('User status changed successfully.');
                 this.cdr.detectChanges();
             },
             error: () => {
-                alert('Failed to change user status.');
+                this.toastService.error('Failed to change user status.');
                 this.cdr.detectChanges();
             }
         });

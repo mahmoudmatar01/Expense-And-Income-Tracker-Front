@@ -5,17 +5,20 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { ModalComponent } from '../../../shared/components/modal/modal.component';
 import { WalletService } from '../../../core/services/wallet.service';
 import { ChildAccountService } from '../../../core/services/child-account.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-parent-wallets',
     standalone: true,
-    imports: [CommonModule, FormsModule, PageHeaderComponent, ModalComponent],
+    imports: [CommonModule, FormsModule, PageHeaderComponent, ModalComponent, EmptyStateComponent],
     templateUrl: './wallets.component.html',
     styleUrls: ['../../../shared/styles/pages.css']
 })
 export class ParentWalletsComponent implements OnInit {
     private walletService = inject(WalletService);
     private childService = inject(ChildAccountService);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     isLoading = true;
@@ -63,7 +66,7 @@ export class ParentWalletsComponent implements OnInit {
                 this.children = (res.success && res.data) ? res.data : [];
                 this.cdr.detectChanges();
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });
@@ -102,12 +105,13 @@ export class ParentWalletsComponent implements OnInit {
 
         obs$.subscribe({
             next: () => {
+                this.toastService.success(this.editingWallet ? 'Wallet updated successfully.' : 'Wallet created successfully.');
                 this.loadWallets();
                 this.showModal = false;
                 this.cdr.detectChanges();
             },
             error: () => {
-                alert('Failed to save wallet.');
+                this.toastService.error('Failed to save wallet. Please try again.');
                 this.cdr.detectChanges();
             }
         });
@@ -117,11 +121,13 @@ export class ParentWalletsComponent implements OnInit {
         if (confirm(`Are you sure you want to delete ${wallet.name}?`)) {
             this.walletService.deleteWallet(wallet.id).subscribe({
                 next: () => {
+                    this.toastService.success('Wallet deleted successfully.');
                     this.loadWallets();
                     this.cdr.detectChanges();
                 },
-                error: () => {
-                    alert('Failed to delete wallet.');
+                error: (err) => {
+                    const msg = err.error?.message || 'Failed to delete wallet.';
+                    this.toastService.error(msg);
                     this.cdr.detectChanges();
                 }
             });

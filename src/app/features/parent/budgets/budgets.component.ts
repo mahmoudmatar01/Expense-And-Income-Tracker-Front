@@ -5,17 +5,20 @@ import { PageHeaderComponent } from '../../../shared/components/page-header/page
 import { ModalComponent } from '../../../shared/components/modal/modal.component';
 import { CategoryService } from '../../../core/services/category.service';
 import { BudgetService } from '../../../core/services/budget.service';
+import { ToastService } from '../../../core/services/toast.service';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 
 @Component({
     selector: 'app-parent-budgets',
     standalone: true,
-    imports: [CommonModule, FormsModule, PageHeaderComponent, ModalComponent],
+    imports: [CommonModule, FormsModule, PageHeaderComponent, ModalComponent, EmptyStateComponent],
     templateUrl: './budgets.component.html',
     styleUrls: ['../../../shared/styles/pages.css']
 })
 export class ParentBudgetsComponent implements OnInit {
     private categoryService = inject(CategoryService);
     private budgetService = inject(BudgetService);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     Math = Math;
@@ -58,7 +61,7 @@ export class ParentBudgetsComponent implements OnInit {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.errorMessage = 'Failed to load budgets.';
+                this.toastService.error('Failed to load budgets.');
                 this.isLoading = false;
                 this.cdr.detectChanges();
             }
@@ -69,13 +72,14 @@ export class ParentBudgetsComponent implements OnInit {
         if (this.newBudget.categoryId && this.newBudget.limit > 0) {
             this.budgetService.createBudget(this.newBudget.categoryId, this.newBudget.limit).subscribe({
                 next: () => {
+                    this.toastService.success('Budget set successfully.');
                     this.loadBudgets();
                     this.showModal = false;
                     this.newBudget = { categoryId: null, limit: 0 };
                     this.cdr.detectChanges();
                 },
-                error: () => {
-                    alert('Failed to set budget.');
+                error: (err) => {
+                    this.toastService.error(err?.error?.message || 'Failed to set budget.');
                     this.cdr.detectChanges();
                 }
             });

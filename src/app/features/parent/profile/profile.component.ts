@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { ProfileService } from '../../../core/services/profile.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-parent-profile',
@@ -13,12 +14,11 @@ import { ProfileService } from '../../../core/services/profile.service';
 })
 export class ParentProfileComponent implements OnInit {
     private profileService = inject(ProfileService);
+    private toastService = inject(ToastService);
     private cdr = inject(ChangeDetectorRef);
 
     isLoading = true;
     isSaving = false;
-    errorMessage = '';
-    successMessage = '';
 
     profile = { id: 0, name: '', email: '', role: '', status: '' };
     editForm = { name: '', email: '', currentPassword: '', newPassword: '' };
@@ -40,7 +40,7 @@ export class ParentProfileComponent implements OnInit {
                 this.cdr.detectChanges();
             },
             error: () => {
-                this.errorMessage = 'Failed to load profile.';
+                this.toastService.error('Failed to load profile.');
                 this.isLoading = false;
                 this.cdr.detectChanges();
             }
@@ -64,8 +64,6 @@ export class ParentProfileComponent implements OnInit {
 
     saveProfile() {
         this.isSaving = true;
-        this.errorMessage = '';
-        this.successMessage = '';
 
         const payload: any = {};
         if (this.editForm.name && this.editForm.name !== this.profile.name) {
@@ -82,7 +80,7 @@ export class ParentProfileComponent implements OnInit {
         this.profileService.updateProfile(payload).subscribe({
             next: (res) => {
                 this.isSaving = false;
-                this.successMessage = 'Profile updated successfully!';
+                this.toastService.success('Profile updated successfully!');
                 this.editForm.currentPassword = '';
                 this.editForm.newPassword = '';
                 if (res.success && res.data) {
@@ -92,7 +90,7 @@ export class ParentProfileComponent implements OnInit {
             },
             error: (err) => {
                 this.isSaving = false;
-                this.errorMessage = err?.error?.message || 'Failed to update profile.';
+                this.toastService.error(err?.error?.message || 'Failed to update profile.');
                 this.cdr.detectChanges();
             }
         });
