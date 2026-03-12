@@ -11,11 +11,18 @@ import { WalletService } from '../../../core/services/wallet.service';
 @Component({
     selector: 'app-child-transactions',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, PageHeaderComponent, DataTableComponent, ModalComponent],
+    imports: [
+        CommonModule,
+        ReactiveFormsModule,
+        PageHeaderComponent,
+        DataTableComponent,
+        ModalComponent
+    ],
     templateUrl: './child-transactions.component.html',
     styleUrls: ['../../../shared/styles/pages.css']
 })
 export class ChildTransactionsComponent implements OnInit {
+
     private transactionService = inject(TransactionService);
     private categoryService = inject(CategoryService);
     private walletService = inject(WalletService);
@@ -44,8 +51,6 @@ export class ChildTransactionsComponent implements OnInit {
     currentPage = 0;
     totalPages = 1;
 
-
-
     ngOnInit() {
         this.initForm();
         this.loadTransactions();
@@ -55,7 +60,7 @@ export class ChildTransactionsComponent implements OnInit {
 
     initForm() {
         this.txnForm = this.fb.group({
-            type: [{ value: 'EXPENSE', disabled: true }, Validators.required],
+            type: ['EXPENSE', Validators.required],
             amount: [null, [Validators.required, Validators.min(0.01)]],
             walletId: [null, Validators.required],
             categoryId: [null, Validators.required],
@@ -64,17 +69,29 @@ export class ChildTransactionsComponent implements OnInit {
     }
 
     openModal() {
-        this.txnForm.reset();
+        this.txnForm.reset({
+            type: 'EXPENSE',
+            amount: null,
+            walletId: null,
+            categoryId: null,
+            description: ''
+        });
+
         this.showModal = true;
     }
 
     loadTransactions() {
         this.isLoading = true;
+
         this.transactionService.getChildTransactions(this.currentPage, 10).subscribe({
             next: (res) => {
+
                 const pageData = res.data || res;
+
                 this.transactions = ((pageData as any).content || []).map((t: any) => {
+
                     const prefix = t.type === 'INCOME' ? '+$' : '-$';
+
                     return {
                         ...t,
                         date: new Date(t.date || t.createdAt).toLocaleDateString(),
@@ -84,11 +101,14 @@ export class ChildTransactionsComponent implements OnInit {
                         description: t.description || 'No description'
                     };
                 });
+
                 this.totalPages = (pageData as any).totalPages || 1;
                 this.currentPage = (pageData as any).number ?? this.currentPage;
+
                 this.isLoading = false;
                 this.cdr.detectChanges();
             },
+
             error: () => {
                 this.errorMessage = 'Failed to load transactions.';
                 this.isLoading = false;
@@ -114,10 +134,12 @@ export class ChildTransactionsComponent implements OnInit {
     loadCategories() {
         this.categoryService.getCategories().subscribe({
             next: (res) => {
-                if (res.success) this.categories = res.data;
+                if (res.success) {
+                    this.categories = res.data;
+                }
                 this.cdr.detectChanges();
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });
@@ -126,36 +148,49 @@ export class ChildTransactionsComponent implements OnInit {
     loadWallets() {
         this.walletService.getChildWallet().subscribe({
             next: (res) => {
-                if (res.success) this.wallets = res.data;
+                if (res.success) {
+                    this.wallets = res.data;
+                }
                 this.cdr.detectChanges();
             },
-            error: () => { 
+            error: () => {
                 this.cdr.detectChanges();
             }
         });
     }
 
     submitTransaction() {
+
         if (this.txnForm.invalid) {
             this.txnForm.markAllAsTouched();
             return;
         }
 
-        const payload = this.txnForm.getRawValue();
+        const payload = this.txnForm.value;
 
         this.transactionService.createTransaction(payload).subscribe({
+
             next: () => {
+
                 this.currentPage = 0;
                 this.loadTransactions();
+
                 this.showModal = false;
-                this.txnForm.reset();
+
+                this.txnForm.reset({
+                    type: 'EXPENSE'
+                });
+
                 this.successMessage = 'Transaction recorded successfully!';
+
                 setTimeout(() => {
                     this.successMessage = '';
                     this.cdr.detectChanges();
                 }, 3000);
+
                 this.cdr.detectChanges();
             },
+
             error: () => {
                 alert('Failed to save transaction.');
                 this.cdr.detectChanges();
