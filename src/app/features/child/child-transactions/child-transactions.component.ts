@@ -36,12 +36,13 @@ export class ChildTransactionsComponent implements OnInit {
     txnForm!: FormGroup;
 
     columns: TableColumn[] = [
+        { key: 'owner', label: 'Owner' },
         { key: 'date', label: 'Date' },
-        { key: 'description', label: 'Description' },
         { key: 'category', label: 'Category', type: 'badge' },
         { key: 'wallet', label: 'Wallet' },
         { key: 'type', label: 'Type', type: 'badge', badgeColors: { INCOME: '#2ECC71', EXPENSE: '#E74C3C' } },
         { key: 'amount', label: 'Amount', type: 'amount' },
+        { key: 'description', label: 'Description' },
     ];
 
     transactions: any[] = [];

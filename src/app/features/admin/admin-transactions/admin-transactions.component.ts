@@ -22,8 +22,9 @@ export class AdminTransactionsComponent implements OnInit {
     errorMessage = '';
 
     columns: TableColumn[] = [
-        { key: 'id', label: 'ID' },
-        { key: 'user', label: 'User' },
+        { key: 'owner', label: 'Owner' },
+        { key: 'id', label: 'Transaction ID' },
+        { key: 'user', label: 'User Name' },
         { key: 'type', label: 'Type', type: 'badge', badgeColors: { INCOME: '#2ECC71', EXPENSE: '#E74C3C' } },
         { key: 'amount', label: 'Amount', type: 'amount' },
         { key: 'category', label: 'Category' },
@@ -45,6 +46,7 @@ export class AdminTransactionsComponent implements OnInit {
             next: (res) => {
                 const pageData = res.data || res;
                 this.transactions = ((pageData as any).content || []).map((t: any) => ({
+                    owner: t.owner,
                     id: t.transactionId,
                     user: t.userName,
                     type: t.transactionType,

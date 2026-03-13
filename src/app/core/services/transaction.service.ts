@@ -17,13 +17,13 @@ export class TransactionService {
         return this.http.post<ApiResponse<TransactionResponse>>(this.apiUrl, payload);
     }
 
-    getParentTransactions(page: number = 0, size: number = 10): Observable<ApiResponse<PaginatedData<TransactionResponse>>> {
+    getParentTransactions(page: number = 0, size: number = 8): Observable<ApiResponse<PaginatedData<TransactionResponse>>> {
         return this.http.get<ApiResponse<PaginatedData<TransactionResponse>>>(
             `${this.apiUrl}/parent?page=${page}&size=${size}`
         );
     }
 
-    getChildTransactions(page: number = 0, size: number = 10): Observable<ApiResponse<PaginatedData<TransactionResponse>>> {
+    getChildTransactions(page: number = 0, size: number = 8): Observable<ApiResponse<PaginatedData<TransactionResponse>>> {
         return this.http.get<ApiResponse<PaginatedData<TransactionResponse>>>(
             `${this.apiUrl}/child?page=${page}&size=${size}`
         );

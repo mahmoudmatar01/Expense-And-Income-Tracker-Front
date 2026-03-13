@@ -23,7 +23,7 @@ export class AdminService {
 
     // ─── Users ──────────────────────────────────────────────
 
-    getUsers(page: number = 0, size: number = 10): Observable<ApiResponse<PaginatedData<AdminUserResponse>>> {
+    getUsers(page: number = 0, size: number = 8): Observable<ApiResponse<PaginatedData<AdminUserResponse>>> {
         return this.http.get<ApiResponse<PaginatedData<AdminUserResponse>>>(
             `${this.apiUrl}/users?page=${page}&size=${size}`
         );
@@ -49,7 +49,7 @@ export class AdminService {
 
     // ─── Transactions ───────────────────────────────────────
 
-    getAdminTransactions(page: number = 0, size: number = 10): Observable<ApiResponse<PaginatedData<AdminTransactionResponse>>> {
+    getAdminTransactions(page: number = 0, size: number = 8): Observable<ApiResponse<PaginatedData<AdminTransactionResponse>>> {
         return this.http.get<ApiResponse<PaginatedData<AdminTransactionResponse>>>(
             `${this.apiUrl}/transactions?page=${page}&size=${size}`
         );

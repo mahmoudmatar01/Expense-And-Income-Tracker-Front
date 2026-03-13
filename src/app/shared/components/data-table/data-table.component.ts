@@ -44,7 +44,9 @@ export interface TableColumn {
           </thead>
           <tbody>
             <tr *ngFor="let row of displayedData; let i = index">
-              <td *ngFor="let col of columns">
+              <td *ngFor="let col of columns"
+                  [class.owner-cell]="col.key === 'owner'"
+                  [title]="col.key === 'owner' ? row[col.key] : null">
                 <ng-container [ngSwitch]="col.type">
                   <span *ngSwitchCase="'badge'" class="badge" [style.background]="getBadgeBg(row[col.key], col)" [style.color]="getBadgeColor(row[col.key], col)">
                     {{ row[col.key] }}
@@ -223,6 +225,16 @@ export interface TableColumn {
     .page-btn:hover:not(:disabled) { border-color: var(--color-primary); color: var(--color-primary); }
     .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .page-btn .material-icons { font-size: 18px; }
+    /* ── Owner email column ── */
+    .owner-cell {
+      max-width: 180px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    @media (max-width: 768px) {
+      .owner-cell { max-width: 120px; }
+    }
   `]
 })
 export class DataTableComponent {

@@ -65,6 +65,7 @@ export interface CreateChildPayload {
 }
 
 export interface TransactionResponse {
+  owner: string;
   id: number;
   type: string;
   amount: number;

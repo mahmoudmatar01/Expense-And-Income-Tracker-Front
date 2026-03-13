@@ -43,6 +43,7 @@ export interface TransactionVolumeStat {
 
 //  Admin Transaction DTO 
 export interface AdminTransactionResponse {
+  owner: string;
   transactionId: number;
   userName: string;
   transactionType: string;
