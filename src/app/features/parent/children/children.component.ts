@@ -47,7 +47,7 @@ export class ParentChildrenComponent implements OnInit {
                 const childrenData = res.success && res.data ? res.data : [];
                 this.children = childrenData.map(c => ({
                     ...c,
-                    status: c.status === 'ACTIVE' ? 'Active' : 'Inactive'
+                    status: c.status === 'ACTIVE' ? 'Active' : 'Suspended',
                 }));
                 this.isLoading = false;
                 this.cdr.detectChanges();

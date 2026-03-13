@@ -37,7 +37,7 @@ export class SuspendedAccountsComponent implements OnInit {
 
     loadSuspendedUsers() {
         this.isLoading = true;
-        this.adminService.getSuspendedUsers(this.currentPage, 10).subscribe({
+        this.adminService.getSuspendedUsers(this.currentPage, 8).subscribe({
             next: (res) => {
                 const pageData = res.data || res;
                 this.suspendedUsers = ((pageData as any).content || []).map((u: any) => ({

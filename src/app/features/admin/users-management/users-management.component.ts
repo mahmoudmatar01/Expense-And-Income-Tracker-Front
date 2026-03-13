@@ -44,7 +44,7 @@ export class UsersManagementComponent implements OnInit {
     loadUsers() {
         this.isLoading = true;
         this.errorMessage = '';
-        this.adminService.getUsers(this.currentPage, 10).subscribe({
+        this.adminService.getUsers(this.currentPage, 8).subscribe({
             next: (res) => {
                 const pageData = res.data || res;
                 this.users = ((pageData as any).content || []).map((u: any) => ({

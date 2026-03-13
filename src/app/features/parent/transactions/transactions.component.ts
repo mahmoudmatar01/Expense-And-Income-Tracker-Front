@@ -54,7 +54,7 @@ export class ParentTransactionsComponent implements OnInit {
 
     loadTransactions() {
         this.isLoading = true;
-        this.transactionService.getParentTransactions(this.currentPage, 10).subscribe({
+        this.transactionService.getParentTransactions(this.currentPage, 8).subscribe({
             next: (res) => {
                 const pageData = res.data || res;
                 this.transactions = ((pageData as any).content || []).map((t: any) => {

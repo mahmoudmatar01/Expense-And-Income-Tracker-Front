@@ -82,7 +82,7 @@ export class ChildTransactionsComponent implements OnInit {
 
     loadTransactions() {
         this.isLoading = true;
-        this.transactionService.getChildTransactions(this.currentPage, 10).subscribe({
+        this.transactionService.getChildTransactions(this.currentPage, 8).subscribe({
             next: (res) => {
                 const pageData = res.data || res;
                 this.transactions = ((pageData as any).content || []).map((t: any) => {
