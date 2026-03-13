@@ -13,7 +13,6 @@ export class WalletService {
 
     constructor(private http: HttpClient) { }
 
-    // ─── Parent Wallets ─────────────────────────────────────
 
     createWallet(payload: WalletPayload): Observable<ApiResponse<WalletResponse>> {
         return this.http.post<ApiResponse<WalletResponse>>(`${this.apiUrl}/parent/wallets`, payload);
@@ -30,8 +29,6 @@ export class WalletService {
     deleteWallet(walletId: number): Observable<string> {
         return this.http.delete(`${this.apiUrl}/parent/wallets/${walletId}`, { responseType: 'text' });
     }
-
-    // ─── Child Wallets ──────────────────────────────────────
 
     getChildWallet(): Observable<ApiResponse<ChildWalletResponse[]>> {
         return this.http.get<ApiResponse<ChildWalletResponse[]>>(`${this.apiUrl}/child/wallet`);

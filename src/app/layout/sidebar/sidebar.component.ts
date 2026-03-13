@@ -53,7 +53,6 @@ export class SidebarComponent {
         return this.menuItems.filter(item => userRole && item.roles.includes(userRole));
     }
 
-    /** On mobile, close the sidebar when a nav link is clicked */
     onNavClick(): void {
         this.closed.emit();
     }

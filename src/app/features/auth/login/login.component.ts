@@ -1,14 +1,14 @@
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService, UserRole } from '../../../core/services/auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 
 @Component({
     selector: 'app-login',
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterLink],
+    imports: [CommonModule, FormsModule],
     templateUrl: './login.component.html',
     styleUrls: ['./login.component.css']
 })
@@ -21,13 +21,11 @@ export class LoginComponent {
     email = '';
     password = '';
     isLoading = false;
-    errorMessage = '';
 
     login(): void {
         if (!this.email || !this.password) return;
 
         this.isLoading = true;
-        this.errorMessage = '';
 
         this.authService.login(this.email, this.password).subscribe({
             next: (res) => {

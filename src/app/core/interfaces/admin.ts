@@ -1,4 +1,4 @@
-// ─── Admin User DTOs ───────────────────────────────────
+//  Admin User DTOs 
 export interface AdminUserResponse {
   id: number;
   name: string;
@@ -9,7 +9,7 @@ export interface AdminUserResponse {
   date_joined: string;
 }
 
-// ─── Admin Dashboard DTOs ──────────────────────────────
+//  Admin Dashboard DTOs 
 export interface AdminDashboardOverview {
   totalUsers: number;
   activeParents: number;
@@ -41,7 +41,7 @@ export interface TransactionVolumeStat {
   averageTransactionAmount: number;
 }
 
-// ─── Admin Transaction DTO ─────────────────────────────
+//  Admin Transaction DTO 
 export interface AdminTransactionResponse {
   transactionId: number;
   userName: string;

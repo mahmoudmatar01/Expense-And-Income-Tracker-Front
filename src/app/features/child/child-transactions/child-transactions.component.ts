@@ -82,16 +82,11 @@ export class ChildTransactionsComponent implements OnInit {
 
     loadTransactions() {
         this.isLoading = true;
-
         this.transactionService.getChildTransactions(this.currentPage, 10).subscribe({
             next: (res) => {
-
                 const pageData = res.data || res;
-
                 this.transactions = ((pageData as any).content || []).map((t: any) => {
-
                     const prefix = t.type === 'INCOME' ? '+$' : '-$';
-
                     return {
                         ...t,
                         date: new Date(t.date || t.createdAt).toLocaleDateString(),
@@ -110,7 +105,6 @@ export class ChildTransactionsComponent implements OnInit {
             },
 
             error: () => {
-                this.toastService.error('Failed to load transactions.');
                 this.isLoading = false;
                 this.cdr.detectChanges();
             }
@@ -160,23 +154,16 @@ export class ChildTransactionsComponent implements OnInit {
     }
 
     submitTransaction() {
-
         if (this.txnForm.invalid) {
             this.txnForm.markAllAsTouched();
             return;
         }
-
         const payload = this.txnForm.value;
-
         this.transactionService.createTransaction(payload).subscribe({
-
             next: () => {
-
                 this.currentPage = 0;
                 this.loadTransactions();
-
                 this.showModal = false;
-
                 this.txnForm.reset({
                     type: 'EXPENSE'
                 });

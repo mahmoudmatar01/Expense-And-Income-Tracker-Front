@@ -23,7 +23,7 @@ export class ToastService {
 
     setTimeout(() => {
       this.remove(id);
-    }, 5000); // Remove after 5 seconds
+    }, 5000); // remove after 5 seconds
   }
 
   success(message: string): void {

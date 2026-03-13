@@ -1,5 +1,4 @@
 <div class="layout-wrapper">
-    <!-- Mobile overlay backdrop -->
     <div class="sidebar-overlay" [class.visible]="sidebarOpen" (click)="closeSidebar()"></div>
 
     <app-sidebar [isOpen]="sidebarOpen" (closed)="closeSidebar()"></app-sidebar>

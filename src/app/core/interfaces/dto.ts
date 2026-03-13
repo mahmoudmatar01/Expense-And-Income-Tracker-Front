@@ -1,5 +1,3 @@
-// ─── Wallet DTOs ───────────────────────────────────────
-
 export interface WalletChild {
   id: number;
   name: string;
@@ -22,7 +20,6 @@ export interface WalletPayload {
   childrenIds?: number[];
 }
 
-// ─── Category DTOs ─────────────────────────────────────
 
 export interface CategoryResponse {
   id: number;
@@ -37,7 +34,6 @@ export interface CategoryDetailResponse {
   usedPercentage: number;
 }
 
-// ─── Budget DTOs ───────────────────────────────────────
 
 export interface BudgetResponse {
   id: number;
@@ -51,8 +47,6 @@ export interface CreateBudgetPayload {
   categoryId: number;
   monthlyLimit: number;
 }
-
-// ─── Child Account DTOs ─────────────────────────────────
 
 export interface ChildResponse {
   id: number;
@@ -69,8 +63,6 @@ export interface CreateChildPayload {
   password: string;
   spendingLimit: number;
 }
-
-// ─── Transaction DTOs ───────────────────────────────────
 
 export interface TransactionResponse {
   id: number;
@@ -92,8 +84,6 @@ export interface CreateTransactionPayload {
   type: string;
   description?: string;
 }
-
-// ─── Parent Insights DTOs ───────────────────────────────
 
 export interface ParentOverview {
   totalIncome: number;
@@ -121,8 +111,6 @@ export interface SpendingByCategoryStat {
   amount: number;
 }
 
-// ─── Profile DTOs ───────────────────────────────────────
-
 export interface ProfileResponse {
   id: number;
   name: string;
@@ -138,8 +126,6 @@ export interface UpdateProfilePayload {
   newPassword?: string;
 }
 
-// ─── Child Insights DTOs ────────────────────────────────
-
 export interface ChildOverview {
   walletBalance: number;
   spendingLimit: number;
@@ -151,8 +137,6 @@ export interface ChildSpendingByCategory {
   category: string;
   amount: number;
 }
-
-// ─── Child Wallet DTOs ──────────────────────────────────
 
 export interface ChildWalletResponse {
   walletId: number;

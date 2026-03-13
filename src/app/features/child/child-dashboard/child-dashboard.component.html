@@ -15,12 +15,17 @@
 <div class="charts-row">
     <div class="chart-card">
         <h3>Spending by Category</h3>
-        <ng-container
-            *ngIf="categorySpending && categorySpending.labels && categorySpending.labels.length > 0; else noCategoryData">
-            <div class="chart-container" style="height: 240px;">
-                <canvas baseChart [data]="categorySpending" [options]="pieOptions" type="doughnut"></canvas>
-            </div>
-        </ng-container>
+       @if (categorySpending && categorySpending.labels && categorySpending.labels.length > 0) {
+        <div class="chart-container" style="height: 240px;">
+            <canvas baseChart
+                    [data]="categorySpending"
+                    [options]="pieOptions"
+                    type="doughnut">
+            </canvas>
+        </div>
+        } @else {
+        <ng-container *ngTemplateOutlet="noCategoryData"></ng-container>
+        }
         <ng-template #noCategoryData>
             <div class="empty-state"
                 style="height: 240px; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted);">
@@ -32,22 +37,44 @@
 
 <div class="chart-card" style="margin-top: 1.25rem;">
     <h3 style="margin-bottom: 1rem;">Recent Transactions</h3>
-    <div class="recent-list" *ngIf="transactions.length > 0; else noTxns">
-        <div class="txn-item" *ngFor="let txn of transactions">
+    @if (transactions.length > 0) {
+    <div class="recent-list">
+        @for (txn of transactions; track $index) {
+        <div class="txn-item">
             <div class="txn-left">
-                <div class="txn-icon" [class.income]="txn.amount > 0">
-                    <span class="material-icons">{{ txn.icon }}</span>
-                </div>
-                <div class="txn-details">
-                    <span class="txn-desc">{{ txn.description }}</span>
-                    <span class="txn-meta">{{ txn.category || 'N/A' }} · {{ txn.date }}</span>
-                </div>
+
+            <div class="txn-icon" [class.income]="txn.amount > 0">
+                <span class="material-icons">{{ txn.icon }}</span>
             </div>
-            <span class="txn-amount" [class.income]="txn.amount > 0" [class.expense]="txn.amount < 0">
-                {{ txn.amount > 0 ? '+' : '' }}${{ (txn.amount < 0 ? -txn.amount : txn.amount) | number:'1.2-2' }}
-                    </span>
+
+            <div class="txn-details">
+                <span class="txn-desc">{{ txn.description }}</span>
+                <span class="txn-meta">
+                {{ txn.category || 'N/A' }} · {{ txn.date }}
+                </span>
+            </div>
+
+            </div>
+
+            <span class="txn-amount"
+                [class.income]="txn.amount > 0"
+                [class.expense]="txn.amount < 0">
+
+            {{ txn.amount > 0 ? '+' : '' }}${{
+                (txn.amount < 0 ? -txn.amount : txn.amount)
+                | number:'1.2-2'
+            }}
+
+            </span>
         </div>
+
+        }
+
     </div>
+
+    } @else {
+    <ng-container *ngTemplateOutlet="noTxns"></ng-container>
+    }
     <ng-template #noTxns>
         <div class="empty-state" style="padding: 2rem; text-align: center; color: var(--color-text-muted);">
             No transactions recorded yet.

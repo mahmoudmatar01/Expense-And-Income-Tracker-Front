@@ -11,12 +11,15 @@
 
     <nav class="sidebar-nav">
         <ul>
-            <li *ngFor="let item of allowedMenu">
+            @for (item of allowedMenu; track $index) {
+            <li>
                 <a [routerLink]="item.route" routerLinkActive="active" class="nav-link" (click)="onNavClick()">
                     <span class="material-icons">{{item.icon}}</span>
                     <span class="nav-label">{{item.label}}</span>
                 </a>
             </li>
+            }
+            
         </ul>
     </nav>
 </aside>

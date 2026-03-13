@@ -8,7 +8,6 @@ import { LoginRequest } from '../interfaces/LoginRequest';
 import { UserRole, User } from '../interfaces/user';
 import { environment } from '../interfaces/environment';
 
-// Re-export so other files can import from auth.service
 export { UserRole } from '../interfaces/user';
 export type { User } from '../interfaces/user';
 
@@ -25,6 +24,7 @@ export class AuthService {
   ) { }
 
 
+  
   register(data: RegisterRequest): Observable<string> {
     return this.http.post(`${this.API}/register`, data, { responseType: 'text' });
   }
@@ -62,7 +62,6 @@ export class AuthService {
   }
 
   logout(): void {
-    // Fire-and-forget the server logout, then clear local state
     this.http.post(`${this.API}/logout`, {}, { responseType: 'text' }).subscribe({
       error: () => { }
     });

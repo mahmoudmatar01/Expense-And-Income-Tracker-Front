@@ -5,11 +5,10 @@ import { TokenService } from '../services/token.service';
 import { AuthService } from '../services/auth.service';
 import { BehaviorSubject, catchError, filter, switchMap, take, throwError } from 'rxjs';
 
-// Module-level state for coordinating token refresh across concurrent requests
 let isRefreshing = false;
 const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
-/** Endpoints that should NOT have the Authorization header attached */
+// Endpoints that should not have the JWT Authorization header attached 
 const SKIP_URLS = ['/auth/login', '/auth/register', '/auth/refresh'];
 
 export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
@@ -33,7 +32,7 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401 && tokenService.getRefreshToken()) {
-        return handle401Error(authReq, next, tokenService, authService, router);
+        return handle401Error(authReq, next, authService, router);
       }
 
       if (error.status === 401) {
@@ -57,7 +56,6 @@ function addToken(req: HttpRequest<any>, token: string): HttpRequest<any> {
 function handle401Error(
   req: HttpRequest<any>,
   next: HttpHandlerFn,
-  tokenService: TokenService,
   authService: AuthService,
   router: Router
 ) {
@@ -73,8 +71,6 @@ function handle401Error(
           refreshTokenSubject.next(res.data.accessToken);
           return next(addToken(req, res.data.accessToken));
         }
-
-        // Refresh response was not successful
         authService.clearSession();
         router.navigate(['/login']);
         return throwError(() => new Error('Token refresh failed'));
@@ -87,7 +83,6 @@ function handle401Error(
       })
     );
   } else {
-    // Another request is already refreshing — wait for the new token
     return refreshTokenSubject.pipe(
       filter(token => token !== null),
       take(1),

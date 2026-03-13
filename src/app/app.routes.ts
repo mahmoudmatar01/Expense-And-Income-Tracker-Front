@@ -9,7 +9,7 @@ export const routes: Routes = [
 
   { path: '', redirectTo: '/login', pathMatch: 'full' },
 
-  // ─── AUTH ─────────────────────────────────────
+  // ─── AUTH PAGES ROUTES ─────────────────────────────────────
 
   {
     path: 'login',
@@ -25,7 +25,7 @@ export const routes: Routes = [
       .then(m => m.RegisterComponent)
   },
 
-  // ─── ADMIN ────────────────────────────────────
+  // ─── ADMIN PAGES ROUTES ─────────────────────────────────────
 
   {
     path: 'admin',

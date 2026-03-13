@@ -34,11 +34,12 @@
                 <input class="form-control" type="number" formControlName="amount" placeholder="0.00"
                     [class.is-invalid]="txnForm.get('amount')?.invalid && txnForm.get('amount')?.touched" />
 
+                @if (txnForm.get('amount')?.invalid && txnForm.get('amount')?.touched) {
                 <div class="text-danger"
-                    *ngIf="txnForm.get('amount')?.invalid && txnForm.get('amount')?.touched"
                     style="font-size: 12px; margin-top: 4px; color: var(--color-danger);">
                     Amount must be greater than 0
                 </div>
+                }
             </div>
 
         </div>
@@ -54,18 +55,21 @@
 
                     <option [ngValue]="null">Select Wallet</option>
 
-                    <option *ngFor="let w of wallets"
-                            [ngValue]="w.walletId">
+                    @for (w of wallets; track w.walletId) {
+                    <option [ngValue]="w.walletId">
                         {{ w.walletName }}
                     </option>
-
+                    }
+                    
                 </select>
 
+                @if (txnForm.get('walletId')?.invalid && txnForm.get('walletId')?.touched) {
                 <div class="text-danger"
-                    *ngIf="txnForm.get('walletId')?.invalid && txnForm.get('walletId')?.touched"
                     style="font-size: 12px; margin-top: 4px; color: var(--color-danger);">
                     Wallet is required
                 </div>
+                }
+               
             </div>
 
             <div class="form-group">
@@ -77,18 +81,20 @@
 
                     <option [ngValue]="null">Select Category</option>
 
-                    <option *ngFor="let cat of categories"
-                            [ngValue]="cat.id">
+                    @for (cat of categories; track cat.id) {
+                    <option [ngValue]="cat.id">
                         {{ cat.name }}
                     </option>
+                    }
 
                 </select>
 
+                @if (txnForm.get('categoryId')?.invalid && txnForm.get('categoryId')?.touched) {
                 <div class="text-danger"
-                    *ngIf="txnForm.get('categoryId')?.invalid && txnForm.get('categoryId')?.touched"
                     style="font-size: 12px; margin-top: 4px; color: var(--color-danger);">
                     Category is required for expenses
                 </div>
+                }
             </div>
 
         </div>

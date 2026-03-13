@@ -24,15 +24,17 @@
                         placeholder="John Doe" autocomplete="name" />
                 </div>
 
-                <div class="field-error" *ngIf="f['fullName'].touched && f['fullName'].errors">
-                    <span *ngIf="f['fullName'].hasError('required')">
-                        Full name is required.
-                    </span>
+                @if (f['fullName'].touched && f['fullName'].errors) {
+                <div class="field-error">
 
-                    <span *ngIf="f['fullName'].hasError('minlength')">
-                        Name must be at least 2 characters.
-                    </span>
+                    @if (f['fullName'].hasError('required')) {
+                    <span>Full name is required.</span>
+                    } @else if (f['fullName'].hasError('minlength')) {
+                    <span>Name must be at least 2 characters.</span>
+                    }
+
                 </div>
+                }
             </div>
 
             <!-- Email -->
@@ -43,10 +45,17 @@
                     <input id="register-email" type="email" class="form-control has-icon" formControlName="email"
                         placeholder="name@company.com" autocomplete="email" />
                 </div>
-                <div class="field-error" *ngIf="f['email'].touched && f['email'].errors">
-                    <span *ngIf="f['email'].hasError('required')">Email is required.</span>
-                    <span *ngIf="f['email'].hasError('email')">Please enter a valid email address.</span>
+                @if (f['email'].touched && f['email'].errors) {
+                <div class="field-error">
+
+                    @if (f['email'].hasError('required')) {
+                    <span>Email is required.</span>
+                    } @else if (f['email'].hasError('email')) {
+                    <span>Please enter a valid email address.</span>
+                    }
+
                 </div>
+                }
             </div>
 
             <!-- Password -->
@@ -61,20 +70,33 @@
                         <span class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
                     </button>
                 </div>
-                <div class="field-error" *ngIf="f['password'].touched && f['password'].errors">
-                    <span *ngIf="f['password'].hasError('required')">Password is required.</span>
-                    <span *ngIf="f['password'].hasError('minlength')">Password must be at least 8 characters.</span>
-                </div>
+                @if (f['password'].touched && f['password'].errors) {
+                <div class="field-error">
 
-                <!-- Password Strength -->
-                <div class="password-strength" *ngIf="f['password'].value">
-                    <div class="strength-track">
-                        <div class="strength-fill" [style.width]="passwordStrength.width"
-                            [style.background]="passwordStrength.color"></div>
-                    </div>
-                    <span class="strength-label" [style.color]="passwordStrength.color">{{ passwordStrength.label
-                        }}</span>
+                    @if (f['password'].hasError('required')) {
+                    <span>Password is required.</span>
+                    } @else if (f['password'].hasError('minlength')) {
+                    <span>Password must be at least 8 characters.</span>
+                    }
+
                 </div>
+                }
+
+                <!-- Password Strength  -->
+                @if (f['password'].value) {
+                <div class="password-strength">
+                    <div class="strength-track">
+                        <div class="strength-fill"
+                            [style.width]="passwordStrength.width"
+                            [style.background]="passwordStrength.color">
+                        </div>
+                    </div>
+                    <span class="strength-label"
+                            [style.color]="passwordStrength.color">
+                        {{ passwordStrength.label }}
+                    </span>
+                </div>
+                }
             </div>
 
             <!-- Confirm Password -->
@@ -90,8 +112,12 @@
                     </button>
                 </div>
                 <div class="field-error" *ngIf="f['confirmPassword'].touched && f['confirmPassword'].errors">
-                    <span *ngIf="f['confirmPassword'].hasError('required')">Please confirm your password.</span>
-                    <span *ngIf="f['confirmPassword'].hasError('passwordMismatch')">Passwords do not match.</span>
+                    @if (f['confirmPassword'].hasError('required')) {
+                        <span>Please confirm your password.</span>
+                    }
+                    @if (f['confirmPassword'].hasError('passwordMismatch')) {
+                        <span>Passwords do not match.</span>
+                    }
                 </div>
             </div>
 
@@ -110,22 +136,32 @@
                     <span class="terms-text">I agree to the <a href="javascript:void(0)">Terms of Service</a> and <a
                             href="javascript:void(0)">Privacy Policy</a></span>
                 </label>
-                <div class="field-error" *ngIf="f['agreeTerms'].touched && f['agreeTerms'].hasError('required')">
-                    You must agree to the terms to continue.
-                </div>
+                @if (f['agreeTerms'].touched && f['agreeTerms'].hasError('required')) {
+                    <div class="field-error">
+                        You must agree to the terms to continue.
+                    </div>
+                }
             </div>
 
             <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary btn-block" [disabled]="isLoading || registerForm.invalid"
-                [class.loading]="isLoading">
-                <span class="btn-content" *ngIf="!isLoading">
-                    <span class="material-icons" style="font-size: 18px;">person_add</span>
-                    Create Account
-                </span>
-                <span class="btn-content" *ngIf="isLoading">
-                    <span class="spinner"></span>
-                    Creating your account...
-                </span>
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-block" 
+              [disabled]="isLoading || registerForm.invalid" 
+              [class.loading]="isLoading"
+            >
+                @if (!isLoading) {
+                    <span class="btn-content">
+                        <span class="material-icons" style="font-size: 18px;">person_add</span>
+                        Create Account
+                    </span>
+                }@else {
+                    <span class="btn-content" >
+                        <span class="spinner"></span>
+                        Creating your account...
+                    </span>
+                }
+                
             </button>
         </form>
 

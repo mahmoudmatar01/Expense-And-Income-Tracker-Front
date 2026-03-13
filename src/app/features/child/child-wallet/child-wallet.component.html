@@ -1,7 +1,8 @@
 <app-page-header title="My Wallet" subtitle="View your wallet balance and history"></app-page-header>
 
 <!-- Empty State: No wallet assigned -->
-<div *ngIf="!isLoading && !hasWallet" class="empty-state-container">
+ @if (!isLoading && !hasWallet) {
+<div class="empty-state-container">
     <div class="empty-state-card">
         <div class="empty-state-icon">
             <span class="material-icons">account_balance_wallet</span>
@@ -12,19 +13,37 @@
         </p>
     </div>
 </div>
+ }
 
-<ng-container *ngIf="!isLoading && hasWallet">
-    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-bottom: 2rem;">
-        <app-stat-card label="Current Balance" [value]="'$' + (balance | number:'1.2-2')" icon="account_balance_wallet"
-            iconColor="#635BFF" iconBg="rgba(99,91,255,0.1)" [gradient]="true"></app-stat-card>
-        <app-stat-card label="Currency" [value]="currency" icon="monetization_on"
-            iconColor="#2ECC71" iconBg="rgba(46,204,113,0.1)"></app-stat-card>
+
+ @if (!isLoading && hasWallet) {
+<ng-container>
+    <div 
+    class="stats-grid" 
+    style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-bottom: 2rem;">
+        <app-stat-card 
+            label="Current Balance" 
+            [value]="'$' + (balance | number:'1.2-2')" 
+            icon="account_balance_wallet"
+            iconColor="#635BFF" 
+            iconBg="rgba(99,91,255,0.1)" 
+            [gradient]="true">
+        </app-stat-card>
+
+        <app-stat-card 
+            label="Currency" 
+            [value]="currency" 
+            icon="monetization_on"
+            iconColor="#2ECC71" 
+            iconBg="rgba(46,204,113,0.1)">
+        </app-stat-card>
     </div>
 
     <div class="chart-card">
         <h3 style="margin-bottom: 1rem;">Transaction History</h3>
         <div class="wallet-txn-list">
-            <div class="wallet-txn" *ngFor="let txn of transactions">
+            @for (txn of transactions; track $index) {
+            <div class="wallet-txn">
                 <div class="txn-left">
                     <div class="txn-icon" [class.income]="txn.amount > 0">
                         <span class="material-icons">{{ txn.icon }}</span>
@@ -38,10 +57,14 @@
                     {{ txn.amount > 0 ? '+' : '' }}${{ (txn.amount < 0 ? -txn.amount : txn.amount) | number:'1.2-2' }}
                 </span>
             </div>
-            <div *ngIf="transactions.length === 0"
-                style="text-align: center; color: var(--color-text-muted); padding: 2rem;">
-                No transactions yet.
-            </div>
+            }
+           
+            @if (transactions.length === 0) {
+                <div style="text-align: center; color: var(--color-text-muted); padding: 2rem;">
+                    No transactions yet.
+                </div>
+            }
         </div>
     </div>
 </ng-container>
+}
