@@ -33,6 +33,9 @@ export class ParentChildrenComponent implements OnInit {
     ];
 
     children: any[] = [];
+    currentPage = 0;
+    pageSize = 8;
+    totalPages = 1;
 
     newChild = { name: '', email: '', password: '', spendingLimit: 0 };
 
@@ -42,13 +45,18 @@ export class ParentChildrenComponent implements OnInit {
 
     loadChildren() {
         this.isLoading = true;
-        this.childService.getParentChildren().subscribe({
+        this.childService.getParentChildren(this.currentPage, this.pageSize).subscribe({
             next: (res) => {
                 const childrenData = res.success && res.data ? res.data : [];
                 this.children = childrenData.map(c => ({
                     ...c,
                     status: c.status === 'ACTIVE' ? 'Active' : 'Suspended',
                 }));
+                if (childrenData.length === this.pageSize) {
+                    this.totalPages = Math.max(this.totalPages, this.currentPage + 2);
+                } else {
+                    this.totalPages = this.currentPage + 1;
+                }
                 this.isLoading = false;
                 this.cdr.detectChanges();
             },
@@ -58,6 +66,20 @@ export class ParentChildrenComponent implements OnInit {
                 this.cdr.detectChanges();
             }
         });
+    }
+
+    nextPage() {
+        if (this.currentPage < this.totalPages - 1) {
+            this.currentPage++;
+            this.loadChildren();
+        }
+    }
+
+    prevPage() {
+        if (this.currentPage > 0) {
+            this.currentPage--;
+            this.loadChildren();
+        }
     }
 
     openAdd() {

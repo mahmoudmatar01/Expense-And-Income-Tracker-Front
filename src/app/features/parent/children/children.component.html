@@ -19,6 +19,14 @@
     </ng-template>
 </app-data-table>
 
+<!-- Pagination Control -->
+<div
+    style="display: flex; justify-content: flex-end; align-items: center; gap: 1rem; margin-top: 1rem; padding: 0 1rem;">
+    <button class="btn-outline" (click)="prevPage()" [disabled]="currentPage === 0">Previous</button>
+    <span style="font-size: 0.875rem;">Page {{ currentPage + 1 }} of {{ totalPages === 0 ? 1 : totalPages }}</span>
+    <button class="btn-outline" (click)="nextPage()" [disabled]="currentPage >= totalPages - 1">Next</button>
+</div>
+
 <app-modal [isOpen]="showModal" title="Add Child Account" (close)="showModal = false">
     <div class="form-row">
         <div class="form-group">

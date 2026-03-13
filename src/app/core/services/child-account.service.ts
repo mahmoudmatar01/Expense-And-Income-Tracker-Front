@@ -17,8 +17,8 @@ export class ChildAccountService {
         return this.http.post(this.apiUrl, payload, { responseType: 'text' });
     }
 
-    getParentChildren(): Observable<ApiResponse<ChildResponse[]>> {
-        return this.http.get<ApiResponse<ChildResponse[]>>(this.apiUrl);
+    getParentChildren(page: number = 0, size: number = 8): Observable<ApiResponse<ChildResponse[]>> {
+        return this.http.get<ApiResponse<ChildResponse[]>>(`${this.apiUrl}?page=${page}&size=${size}`);
     }
 
     updateChildStatus(childId: number): Observable<string> {
