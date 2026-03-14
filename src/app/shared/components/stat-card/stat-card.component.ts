@@ -84,6 +84,33 @@ import { CommonModule } from '@angular/common';
     .stat-change.positive { color: var(--color-success); }
     .stat-change.negative { color: var(--color-danger); }
     .change-icon { font-size: 16px; }
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .stat-card {
+        padding: 1.125rem;
+        gap: 0.75rem;
+      }
+      .stat-value {
+        font-size: 1.25rem;
+      }
+      .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+      }
+    }
+    @media (max-width: 480px) {
+      .stat-card {
+        padding: 1rem;
+        gap: 0.625rem;
+      }
+      .stat-value {
+        font-size: 1.125rem;
+      }
+      .stat-label {
+        font-size: 0.75rem;
+      }
+    }
   `]
 })
 export class StatCardComponent {

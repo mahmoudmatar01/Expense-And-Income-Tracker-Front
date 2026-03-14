@@ -10,17 +10,17 @@
 <ng-container *ngIf="!isLoading">
     <!-- Profile Header Card -->
     <div class="chart-card" style="margin-bottom: 1.5rem;">
-        <div style="display: flex; align-items: center; gap: 1.5rem;">
+        <div style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
             <div
-                style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #635BFF, #8b85ff); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.75rem;">
+                style="width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #635BFF, #8b85ff); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.75rem; flex-shrink: 0;">
                 {{ profile.name ? profile.name.charAt(0).toUpperCase() : '?' }}
             </div>
-            <div>
-                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--color-secondary); margin: 0;">
+            <div style="min-width: 0; flex: 1;">
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--color-secondary); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                     {{ profile.name }}</h3>
-                <p style="font-size: 0.875rem; color: var(--color-text-muted); margin: 0.25rem 0;">{{ profile.email }}
+                <p style="font-size: 0.875rem; color: var(--color-text-muted); margin: 0.25rem 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ profile.email }}
                 </p>
-                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap;">
                     <span
                         style="font-size: 0.6875rem; font-weight: 600; padding: 0.2rem 0.75rem; border-radius: 20px; background: rgba(99,91,255,0.1); color: #635BFF;">
                         {{ getRoleBadge() }}
@@ -47,7 +47,10 @@
             </div>
             <div class="form-group">
                 <label class="form-label">Email</label>
-                <input class="form-control" type="email" [(ngModel)]="editForm.email" placeholder="Your email" />
+                <input class="form-control" type="email" [(ngModel)]="editForm.email" placeholder="Your email" readonly />
+                <small style="font-size: 0.75rem; color: var(--color-text-muted); margin-top: 0.25rem; display: block;">
+                    Email address cannot be changed.
+                </small>
             </div>
         </div>
 

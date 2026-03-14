@@ -337,8 +337,46 @@
 }
 
 /* ─── Responsive ─── */
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 1rem;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
+
+    .auth-card {
+        padding: 2rem 1.75rem;
+    }
+
+    .auth-header {
+        margin-bottom: 1.5rem;
+    }
+}
+
 @media (max-width: 520px) {
     .auth-card {
         padding: 2rem 1.5rem;
     }
+
+    .auth-form {
+        gap: 1rem;
+    }
 }
+
+@media (max-width: 380px) {
+    .auth-card {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .logo h2 {
+        font-size: 1.25rem;
+    }
+
+    .logo-icon {
+        font-size: 28px;
+    }
+
+    .password-strength {
+        flex-wrap: wrap;
+    }
+}

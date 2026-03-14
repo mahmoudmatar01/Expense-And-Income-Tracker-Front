@@ -101,7 +101,7 @@ export interface TableColumn {
     }
     .table-toolbar {
       display: flex;
-      gap: 1rem;
+      gap: 0.75rem;
       padding: 1rem 1.5rem;
       border-bottom: 1px solid var(--color-border);
       align-items: center;
@@ -115,7 +115,7 @@ export interface TableColumn {
       border-radius: var(--border-radius);
       padding: 0 0.75rem;
       flex: 1;
-      min-width: 200px;
+      min-width: 160px;
       max-width: 320px;
     }
     .search-icon { color: var(--color-text-muted); font-size: 20px; }
@@ -138,13 +138,23 @@ export interface TableColumn {
       color: var(--color-text);
       cursor: pointer;
     }
-    .table-responsive { overflow-x: auto; }
-    .data-table { width: 100%; border-collapse: collapse; }
+    .table-responsive { 
+      overflow-x: auto; 
+      -webkit-overflow-scrolling: touch;
+    }
+    .data-table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      min-width: 600px;
+    }
     .data-table th, .data-table td {
-      padding: 0.875rem 1.5rem;
+      padding: 0.875rem 1rem;
       text-align: left;
       border-bottom: 1px solid var(--color-border);
       white-space: nowrap;
+      max-width: 220px;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .data-table th {
       font-size: 0.75rem;
@@ -232,8 +242,24 @@ export interface TableColumn {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .table-toolbar { padding: 0.875rem 1rem; }
+      .data-table th, .data-table td { padding: 0.75rem 1rem; }
+    }
     @media (max-width: 768px) {
+      .table-toolbar { padding: 0.75rem; gap: 0.5rem; }
+      .search-box { max-width: 100%; }
+      .filter-select { width: 100%; }
+      .data-table th, .data-table td { padding: 0.625rem 0.75rem; font-size: 0.8125rem; }
       .owner-cell { max-width: 120px; }
+      .table-footer { flex-wrap: wrap; gap: 0.5rem; padding: 0.75rem 1rem; }
+      .page-info { width: 100%; text-align: center; }
+      .pagination { width: 100%; justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .data-table th, .data-table td { padding: 0.5rem; font-size: 0.75rem; }
+      .owner-cell { max-width: 90px; }
     }
   `]
 })

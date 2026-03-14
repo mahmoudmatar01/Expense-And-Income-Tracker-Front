@@ -4,13 +4,14 @@ import { BaseChartDirective } from 'ng2-charts';
 import { ChartData, ChartConfiguration } from 'chart.js';
 import { PageHeaderComponent } from '../../../shared/components/page-header/page-header.component';
 import { StatCardComponent } from '../../../shared/components/stat-card/stat-card.component';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { ChildInsightsService } from '../../../core/services/child-insights.service';
 import { TransactionService } from '../../../core/services/transaction.service';
 
 @Component({
     selector: 'app-child-dashboard',
     standalone: true,
-    imports: [CommonModule, BaseChartDirective, PageHeaderComponent, StatCardComponent],
+    imports: [CommonModule, BaseChartDirective, PageHeaderComponent, StatCardComponent, EmptyStateComponent],
     templateUrl: './child-dashboard.component.html',
     styleUrls: ['./child-dashboard.component.css', '../../../shared/styles/pages.css']
 })

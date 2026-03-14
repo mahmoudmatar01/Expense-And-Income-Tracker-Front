@@ -67,3 +67,24 @@
 .auth-footer a:hover {
     text-decoration: underline;
 }
+
+/* ── Responsive ── */
+@media (max-width: 520px) {
+    .auth-card {
+        padding: 2rem 1.5rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .auth-card {
+        padding: 1.5rem 1.25rem;
+    }
+
+    .logo h2 {
+        font-size: 1.25rem;
+    }
+
+    .logo-icon {
+        font-size: 28px;
+    }
+}

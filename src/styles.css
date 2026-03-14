@@ -209,6 +209,10 @@ select.form-control {
   gap: 1rem;
 }
 
+.text-right {
+  text-align: right;
+}
+
 .mt-2 {
   margin-top: 0.5rem;
 }

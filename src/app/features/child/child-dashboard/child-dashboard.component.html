@@ -1,6 +1,6 @@
 <app-page-header title="My Dashboard" subtitle="Your spending at a glance"></app-page-header>
 
-<div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
+<div class="stats-grid">
     <app-stat-card label="Wallet Balance" [value]="'$' + (overview.walletBalance | number:'1.2-2')"
         icon="account_balance_wallet" iconColor="#635BFF" iconBg="rgba(99,91,255,0.1)"
         [gradient]="true"></app-stat-card>
@@ -27,8 +27,7 @@
         <ng-container *ngTemplateOutlet="noCategoryData"></ng-container>
         }
         <ng-template #noCategoryData>
-            <div class="empty-state"
-                style="height: 240px; display: flex; align-items: center; justify-content: center; color: var(--color-text-muted);">
+            <div class="chart-empty-state">
                 No spending data available yet.
             </div>
         </ng-template>
@@ -76,8 +75,6 @@
     <ng-container *ngTemplateOutlet="noTxns"></ng-container>
     }
     <ng-template #noTxns>
-        <div class="empty-state" style="padding: 2rem; text-align: center; color: var(--color-text-muted);">
-            No transactions recorded yet.
-        </div>
+        <app-empty-state title="No transactions yet" icon="receipt_long" message="Your recent spending will appear here."></app-empty-state>
     </ng-template>
 </div>

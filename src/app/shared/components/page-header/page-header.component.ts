@@ -22,6 +22,7 @@ import { CommonModule } from '@angular/common';
       justify-content: space-between;
       align-items: flex-start;
       margin-bottom: 2rem;
+      flex-wrap: wrap; /* Allow items to wrap */
     }
     h1 {
       font-size: 1.5rem;
@@ -37,6 +38,23 @@ import { CommonModule } from '@angular/common';
       display: flex;
       gap: 0.75rem;
       align-items: center;
+    }
+
+    /* Responsive adjustments for small screens */
+    @media (max-width: 768px) {
+      .page-header {
+        flex-direction: column; /* Stack vertically */
+        align-items: flex-start; /* Align items to the start when stacked */
+        margin-bottom: 1.5rem;
+      }
+      h1 {
+        font-size: 1.25rem; /* Reduce heading size */
+      }
+      .header-actions {
+        margin-top: 1rem; /* Add space between title and actions */
+        width: 100%; /* Take full width if needed */
+        justify-content: flex-start; /* Align actions to the start */
+      }
     }
   `]
 })

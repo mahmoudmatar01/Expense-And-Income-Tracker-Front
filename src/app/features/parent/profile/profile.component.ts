@@ -57,7 +57,6 @@ export class ParentProfileComponent implements OnInit {
     get isDirty(): boolean {
         return (
             this.editForm.name !== this.profile.name ||
-            this.editForm.email !== this.profile.email ||
             (this.editForm.currentPassword.length > 0 && this.editForm.newPassword.length > 0)
         );
     }
@@ -68,9 +67,6 @@ export class ParentProfileComponent implements OnInit {
         const payload: any = {};
         if (this.editForm.name && this.editForm.name !== this.profile.name) {
             payload.name = this.editForm.name;
-        }
-        if (this.editForm.email && this.editForm.email !== this.profile.email) {
-            payload.email = this.editForm.email;
         }
         if (this.editForm.currentPassword && this.editForm.newPassword) {
             payload.currentPassword = this.editForm.currentPassword;

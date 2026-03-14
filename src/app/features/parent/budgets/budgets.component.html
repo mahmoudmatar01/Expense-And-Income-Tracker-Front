@@ -5,23 +5,23 @@
 </app-page-header>
 
 <!-- Budget Summary -->
-<div class="stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 2rem;">
+<div class="stats-grid" style="margin-bottom: 2rem;">
     <div class="chart-card" style="text-align: center;">
         <span style="font-size: 0.8125rem; color: var(--color-text-muted); display: block; margin-bottom: 0.5rem;">Total
             Budget</span>
-        <span style="font-size: 1.75rem; font-weight: 700; color: var(--color-secondary);">${{ totalBudget |
+        <span class="text-display-large" style="color: var(--color-secondary); display: block;">${{ totalBudget |
             number:'1.0-0' }}</span>
     </div>
     <div class="chart-card" style="text-align: center;">
         <span style="font-size: 0.8125rem; color: var(--color-text-muted); display: block; margin-bottom: 0.5rem;">Total
             Spent</span>
-        <span style="font-size: 1.75rem; font-weight: 700; color: var(--color-danger);">${{ totalSpent | number:'1.0-0'
+        <span class="text-display-large" style="color: var(--color-danger); display: block;">${{ totalSpent | number:'1.0-0'
             }}</span>
     </div>
     <div class="chart-card" style="text-align: center;">
         <span
             style="font-size: 0.8125rem; color: var(--color-text-muted); display: block; margin-bottom: 0.5rem;">Remaining</span>
-        <span style="font-size: 1.75rem; font-weight: 700; color: var(--color-success);">${{ totalRemaining |
+        <span class="text-display-large" style="color: var(--color-success); display: block;">${{ totalRemaining |
             number:'1.0-0' }}</span>
     </div>
 </div>

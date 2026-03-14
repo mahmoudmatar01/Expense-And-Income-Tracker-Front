@@ -30,6 +30,7 @@ import { CommonModule } from '@angular/common';
       align-items: center;
       justify-content: center;
       z-index: 1000;
+      padding: 1rem;
       animation: fadeIn 0.2s ease;
     }
     .modal-container {
@@ -37,22 +38,26 @@ import { CommonModule } from '@angular/common';
       border-radius: var(--border-radius-lg);
       box-shadow: 0 20px 60px rgba(0,0,0,0.15);
       max-height: 90vh;
+      width: 100%;
       overflow-y: auto;
       animation: slideUp 0.25s ease;
     }
-    .modal-sm { width: 400px; }
-    .modal-md { width: 560px; }
-    .modal-lg { width: 720px; }
+    .modal-sm { max-width: 420px; }
+    .modal-md { max-width: 580px; }
+    .modal-lg { max-width: 740px; }
     .modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding: 1.5rem 1.5rem 0;
+      gap: 0.75rem;
     }
     .modal-header h2 {
       font-size: 1.125rem;
       font-weight: 600;
       color: var(--color-secondary);
+      flex: 1;
+      min-width: 0;
     }
     .close-btn {
       display: flex;
@@ -66,6 +71,7 @@ import { CommonModule } from '@angular/common';
       cursor: pointer;
       color: var(--color-text-muted);
       transition: background 0.15s;
+      flex-shrink: 0;
     }
     .close-btn:hover {
       background: var(--color-background);
@@ -73,6 +79,38 @@ import { CommonModule } from '@angular/common';
     .modal-body { padding: 1.5rem; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      .modal-backdrop {
+        align-items: flex-end;
+        padding: 0;
+      }
+      .modal-sm,
+      .modal-md,
+      .modal-lg {
+        max-width: 100%;
+        border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+        max-height: 92vh;
+      }
+      .modal-header {
+        padding: 1.25rem 1.25rem 0;
+      }
+      .modal-body {
+        padding: 1.25rem;
+      }
+    }
+    /* ── Small mobile ── */
+    @media (max-width: 480px) {
+      .modal-header {
+        padding: 1rem 1rem 0;
+      }
+      .modal-header h2 {
+        font-size: 1rem;
+      }
+      .modal-body {
+        padding: 1rem;
+      }
+    }
   `]
 })
 export class ModalComponent {

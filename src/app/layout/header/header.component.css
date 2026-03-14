@@ -36,6 +36,20 @@
     background: var(--color-background);
 }
 
+.mobile-logo {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+}
+
+.mobile-logo .logo-icon {
+    font-size: 20px;
+}
+
 .hamburger-btn .material-icons {
     font-size: 24px;
 }
@@ -104,7 +118,11 @@
     }
 
     .header {
-        padding: 0 1.5rem;
+        padding: 0 1.25rem;
+    }
+
+    .mobile-logo {
+        display: flex;
     }
 }
 
@@ -120,5 +138,9 @@
 
     .user-profile {
         gap: 0.5rem;
+    }
+
+    .btn-logout span { /* Hide the text label for logout button */
+        display: none;
     }
 }

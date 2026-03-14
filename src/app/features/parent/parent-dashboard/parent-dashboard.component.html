@@ -1,6 +1,6 @@
 <app-page-header title="Dashboard" subtitle="Your personal finance overview"></app-page-header>
 
-<div class="stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+<div class="stats-grid">
     <app-stat-card label="Total Balance" [value]="'$' + (totalBalance | number:'1.2-2')" icon="account_balance"
         iconColor="#635BFF" iconBg="rgba(99,91,255,0.1)" [gradient]="true"></app-stat-card>
     <app-stat-card label="Monthly Expenses" [value]="'$' + (monthlyExpenses | number:'1.2-2')" icon="trending_down"
@@ -21,15 +21,15 @@
         <h3>Children Spending</h3>
         <div class="children-spending-list">
             <div class="child-spend-item" *ngFor="let child of childrenSpending">
-                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                <div class="child-header">
                     <div class="child-avatar">{{ child.avatar }}</div>
-                    <div style="flex: 1;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span style="font-weight: 600; font-size: 0.875rem;">{{ child.name }}</span>
-                            <span style="font-size: 0.8125rem; color: var(--color-text-muted);">${{ child.spent |
+                    <div class="child-details">
+                        <div class="child-info-header">
+                            <span class="child-name">{{ child.name }}</span>
+                            <span class="child-stats">${{ child.spent |
                                 number:'1.2-2' }} / ${{ child.limit }}</span>
                         </div>
-                        <div class="progress-bar-track" style="margin-top: 5px;">
+                        <div class="progress-bar-track">
                             <div class="progress-bar-fill"
                                 [style.width.%]="(child.limit > 0 ? (child.spent / child.limit) * 100 : 0)"
                                 [style.background]="(child.limit > 0 ? child.spent / child.limit : 0) > 0.8 ? 'var(--color-danger)' : 'var(--color-primary)'">
@@ -44,10 +44,10 @@
 
 <!-- Recent Transactions -->
 <div class="chart-card" style="margin-top: 1.25rem;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
         <h3 style="margin: 0;">Recent Transactions</h3>
         <a href="/parent/transactions"
-            style="font-size: 0.8125rem; color: var(--color-primary); font-weight: 600; text-decoration: none;">View
+            style="font-size: 0.8125rem; color: var(--color-primary); font-weight: 600; text-decoration: none; white-space: nowrap;">View
             All →</a>
     </div>
     <div class="table-responsive">
@@ -59,7 +59,7 @@
                     <th>Category</th>
                     <th>Wallet</th>
                     <th>Type</th>
-                    <th style="text-align: right;">Amount</th>
+                    <th class="text-right">Amount</th>
                 </tr>
             </thead>
             <tbody>
@@ -70,7 +70,7 @@
                     <td>{{ txn.wallet }}</td>
                     <td><span [class]="txn.type === 'INCOME' ? 'text-success' : 'text-danger'">{{ txn.type }}</span>
                     </td>
-                    <td style="text-align: right; font-weight: 600;"
+                    <td class="text-right"
                         [class]="txn.type === 'INCOME' ? 'text-success' : 'text-danger'">{{ txn.amount }}</td>
                 </tr>
             </tbody>

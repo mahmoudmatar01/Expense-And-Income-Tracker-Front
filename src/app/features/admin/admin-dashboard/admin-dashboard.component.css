@@ -40,11 +40,17 @@
     font-size: 0.875rem;
     font-weight: 600;
     color: var(--color-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-details .email {
     font-size: 0.75rem;
     color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-meta {
@@ -52,6 +58,7 @@
     flex-direction: column;
     align-items: flex-end;
     gap: 0.25rem;
+    flex-shrink: 0;
 }
 
 .role-badge {
@@ -61,9 +68,46 @@
     border-radius: 4px;
     background: rgba(99, 91, 255, 0.1);
     color: var(--color-primary);
+    white-space: nowrap;
 }
 
 .user-meta .date {
     font-size: 0.6875rem;
     color: var(--color-text-muted);
+    white-space: nowrap;
 }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+    .recent-item {
+        gap: 0.75rem;
+        padding: 0.75rem 0;
+    }
+
+    .user-meta .date {
+        display: none;
+    }
+}
+
+@media (max-width: 520px) {
+    .recent-item {
+        flex-wrap: wrap;
+        gap: 0.5rem 0.75rem;
+    }
+    .user-meta {
+        align-items: flex-start;
+        width: 100%;
+        padding-left: calc(30px + 0.75rem); /* Align with details */
+    }
+}
+
+@media (max-width: 480px) {
+    .recent-item {
+        gap: 0.5rem;
+    }
+    .user-avatar {
+        width: 30px;
+        height: 30px;
+        font-size: 0.75rem;
+    }
+}
