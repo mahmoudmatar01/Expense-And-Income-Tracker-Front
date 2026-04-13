@@ -56,12 +56,36 @@
             <label class="form-label">Initial Balance</label>
             <input class="form-control" type="number" [(ngModel)]="newWallet.balance" placeholder="0.00" />
         </div>
-        <div class="form-group">
-            <label class="form-label">Assign to Child (optional)</label>
-            <select class="form-control" [(ngModel)]="newWallet.assignedChildId">
-                <option [ngValue]="null">None</option>
-                <option *ngFor="let child of children" [ngValue]="child.id">{{ child.name }}</option>
-            </select>
+        <div class="form-group" style="position: relative;">
+            <label class="form-label">Assign to Children (optional)</label>
+            <div class="custom-dropdown form-control" (click)="toggleDropdown()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; min-height: 40px; background: var(--bg-surface);">
+                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--color-text);">
+                    {{ getSelectedChildrenText() }}
+                </span>
+                <span class="material-icons" style="color: var(--color-text-muted); font-size: 20px;">
+                    {{ isDropdownOpen ? 'expand_less' : 'expand_more' }}
+                </span>
+            </div>
+            
+            <div *ngIf="isDropdownOpen" class="dropdown-menu" style="position: absolute; top: 100%; left: 0; right: 0; z-index: 1000; background: var(--bg-surface); border: 1px solid var(--border-color); border-radius: 8px; margin-top: 4px; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <div *ngIf="children.length === 0" style="padding: 12px; text-align: center; color: var(--color-text-muted); font-size: 0.9rem;">
+                    No children available
+                </div>
+                <div *ngFor="let child of children" 
+                     (click)="toggleChildSelection(child.id, $event)"
+                     style="padding: 10px 12px; cursor: pointer; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--border-color); transition: background 0.2s;"
+                     onmouseover="this.style.background='var(--bg-background)'"
+                     onmouseout="this.style.background='transparent'">
+                     
+                    <span class="material-icons" [style.color]="newWallet.assignedChildrenIds.includes(child.id) ? 'var(--color-primary)' : 'var(--color-text-muted)'" style="font-size: 20px;">
+                        {{ newWallet.assignedChildrenIds.includes(child.id) ? 'check_box' : 'check_box_outline_blank' }}
+                    </span>
+                    <span style="color: var(--color-text); font-size: 0.95rem;">
+                        {{ child.name }}
+                    </span>
+                </div>
+            </div>
+            <div *ngIf="isDropdownOpen" class="dropdown-backdrop" (click)="isDropdownOpen = false" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 999;"></div>
         </div>
     </div>
     <div class="form-actions">

@@ -29,7 +29,38 @@ export class ParentWalletsComponent implements OnInit {
     wallets: any[] = [];
     children: any[] = [];
 
-    newWallet = { name: '', currency: 'USD', balance: 0, assignedChildId: null as number | null };
+    newWallet = { name: '', currency: 'USD', balance: 0, assignedChildrenIds: [] as number[] };
+
+    isDropdownOpen = false;
+
+    toggleDropdown() {
+        this.isDropdownOpen = !this.isDropdownOpen;
+    }
+
+    toggleChildSelection(childId: number, event?: Event) {
+        if (event) {
+            event.stopPropagation();
+        }
+        const index = this.newWallet.assignedChildrenIds.indexOf(childId);
+        if (index > -1) {
+            this.newWallet.assignedChildrenIds.splice(index, 1);
+        } else {
+            this.newWallet.assignedChildrenIds.push(childId);
+        }
+    }
+
+    getSelectedChildrenText(): string {
+        if (!this.newWallet.assignedChildrenIds || this.newWallet.assignedChildrenIds.length === 0) {
+            return 'Select children';
+        }
+        const selectedNames = this.children
+            .filter(c => this.newWallet.assignedChildrenIds.includes(c.id))
+            .map(c => c.name);
+        
+        if (selectedNames.length === 1) return selectedNames[0];
+        if (selectedNames.length <= 3) return selectedNames.join(', ');
+        return `${selectedNames.length} children selected`;
+    }
 
     ngOnInit() {
         this.loadWallets();
@@ -74,7 +105,8 @@ export class ParentWalletsComponent implements OnInit {
 
     openAdd() {
         this.editingWallet = null;
-        this.newWallet = { name: '', currency: 'USD', balance: 0, assignedChildId: null };
+        this.newWallet = { name: '', currency: 'USD', balance: 0, assignedChildrenIds: [] };
+        this.isDropdownOpen = false;
         this.showModal = true;
     }
 
@@ -84,8 +116,9 @@ export class ParentWalletsComponent implements OnInit {
             name: wallet.name,
             currency: wallet.currency,
             balance: wallet.balance,
-            assignedChildId: wallet.children && wallet.children.length > 0 ? wallet.children[0].id : null
+            assignedChildrenIds: wallet.children ? wallet.children.map((c: any) => c.id) : []
         };
+        this.isDropdownOpen = false;
         this.showModal = true;
     }
 
@@ -96,7 +129,7 @@ export class ParentWalletsComponent implements OnInit {
             name: this.newWallet.name,
             currency: this.newWallet.currency,
             balance: this.newWallet.balance,
-            childrenIds: this.newWallet.assignedChildId ? [this.newWallet.assignedChildId] : []
+            childrenIds: this.newWallet.assignedChildrenIds || []
         };
 
         const obs$ = this.editingWallet
